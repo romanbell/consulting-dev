@@ -1,0 +1,256 @@
+/* styles.css */
+
+body {
+  margin: 0; 
+}
+
+/* Styles for the app container */
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 6rem;
+  padding-bottom: 14rem;
+  background-color: #272727; 
+  /* height: 100%; */
+}
+
+/* Styles for the header */
+.header {
+  font-family: "Inter";
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1832px;
+}
+
+/* Styles for the company name */
+.company-name {
+  font-family: "Inter";
+  flex-grow: 1;
+  margin-top: auto;
+  font-size: 2.5rem;
+  color: #FFFFFF;
+}
+
+/* Styles for the navigation */
+.navigation {
+  font-family: "Inter";
+  display: flex;
+  gap: 20px;
+  /* margin-top: 8rem; */
+  margin-top: auto;
+  font-size: 1.3rem;
+}
+
+/* Styles for the navigation links */
+.nav-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #FFFFFF;
+  text-decoration: none; 
+  /* padding: 1.6rem;
+  border-radius: 1rem;
+  background-color: #2d3748;  */
+}
+
+.nav-link:hover {
+  color: grey; 
+}
+
+.nav-link-dark {
+  padding: 1.2rem;
+  border-radius: 1rem;
+  background-color: #35b739; 
+}
+
+.nav-link-dark:hover {
+  color: #FFFFFF; 
+  background-color: #2c7e2f; 
+}
+
+/* Styles for the main heading */
+.heading {
+  margin-top: 16rem;
+  font-size: 5rem;
+  font-family: "Inter";
+  /* font-weight: regular;  */
+  color: #ffffff; 
+  line-height: 78px;
+}
+
+.head-color {
+  color: #35b739;
+}
+
+/* Styles for the main section */
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16rem;
+  margin-top: 16rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Styles for the services section */
+.services {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+/* Styles for each service */
+.service {
+  /* flex-basis: 30%; Adjust as needed */
+  flex-basis: 15%; 
+  /* margin-left: 5px; Adjust as needed */
+  padding: 0px 25px; 
+}
+
+
+/* Styles for the service card */
+.service-card {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 25px;
+  height: 600px; 
+  width: 325px;
+  border: 1px solid #A9A9A9; 
+}
+
+.service-card:hover {
+  background-color: #363636; 
+}
+
+/* Styles for the service card title */
+.service-card-title {
+  font-family: "Roboto"; 
+  margin-right: 0.6rem; /* Adjust as needed */
+  padding-top: 0.5rem;
+  font-size: 2.2rem;
+  font-weight: bold;
+  text-align: right;
+  color: #ffffff; 
+}
+
+/* Styles for the service card description */
+.service-card-description {
+  margin-top: 1.4rem; /* Adjust as needed */
+  font-size: 1.4rem;
+  color: #cbd5e0; 
+  font-family: "Roboto Mono";
+}
+
+/* Styles for the contact section */
+.contact {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  border: 1px solid #A9A9A9; 
+  background-color: rgba(0, 0, 0, 0); 
+  color: #cbd5e0; 
+  width: 100%;
+  max-width: 1615px;
+}
+
+/* Styles for the contact heading */
+.contact-heading {
+  text-align: right;
+  font-family: "Roboto Mono";
+  margin-top: 0rem; 
+}
+
+/* Styles for the contact description */
+.contact-description {
+  margin-top: 1.4rem; /* Adjust as needed */
+  font-size: 1.6rem;
+  font-family: "Roboto Mono";
+}
+
+/* Styles for the contact form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* width: fit-content; */
+  width: 100%; 
+}
+
+/* Styles for each form row */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%; 
+}
+
+textarea { resize: none; }
+
+
+.form-input {
+  width: 100%; 
+  max-width: 1000px;  
+  border-radius: 1rem;
+  padding-left: 1rem; 
+  padding-top: 1rem; 
+  height: 30px;
+  border: 1px solid #A9A9A9; 
+  background-color: #272727; 
+  font-family: "Roboto Mono";
+
+}
+
+.form-input::placeholder {
+  color: white;
+}
+
+.message-form-input {
+  padding-top: 1rem; 
+  padding-left: 1rem; 
+  width: 100%; 
+  height: 150px; 
+  max-width: 1825px;  
+  border-radius: 1rem;
+  border: 1px solid #A9A9A9; 
+  background-color: #272727; 
+  font-family: "Roboto Mono";
+}
+
+.message-form-input::placeholder {
+  color: white;
+}
+
+/* Styles for the submit button */
+.submit-button {
+  justify-content: center;
+  align-items: start;
+  padding: 1.6rem;
+  margin-top: 0.4rem; /* Adjust as needed */
+  border: none;
+  border-radius: 2rem;
+  background-color: #35b739; 
+  color: white; 
+  width: 200px; /* Adjust as needed */
+  font-family: "Roboto Mono";
+  font-weight: bold; 
+  font-size: 1.2rem; 
+}
+
+
+/* Contact Page */
+.contact-heading {
+  color: white; 
+  font-size: 2.5rem;
+  font-family: "Inter";
+}
+
+.contact-subheading {
+  color: white; 
+  font-size: 1.5rem;
+  font-family: "Roboto Mono"; 
+}
