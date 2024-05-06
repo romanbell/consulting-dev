@@ -1,5 +1,6 @@
 // TODO:  
 
+// Modularize portfolio page so that we have portfolioEntry component or something
 // Fix horizontal scroll overflow (fixed app asset), onlly visible when zoomed in 
 // Service headings get streched on framer animation
 // Create Mobile view 
@@ -9,7 +10,7 @@
 // npm install @fontsource/inter
 // npm install @fontsource/roboto-mono
 // npm install react-router-dom
-
+// npm install framer-motion
 
 import * as React from "react";
 import { Routes, Route, Router } from 'react-router-dom';
