@@ -1,8 +1,7 @@
 // TODO:  
 
 // Fix horizontal scroll overflow (fixed app asset), onlly visible when zoomed in 
-// Lines below service card title 
-  // Service cards expandability 
+// Service headings get streched on framer animation
 // Create Mobile view 
 // Submission handler
 
