@@ -6,6 +6,7 @@ import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { IndexFAB } from "@/components/motion/IndexFAB";
 import { HoverPlate } from "@/components/motion/HoverPlate";
+import { CustomCursor } from "@/components/motion/CustomCursor";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -90,6 +91,7 @@ export default function RootLayout({
         <StatusBar />
         <IndexFAB />
         <HoverPlate />
+        <CustomCursor />
         {/* Analytics placeholder: drop Plausible or PostHog script here */}
       </body>
     </html>

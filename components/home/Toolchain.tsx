@@ -1,6 +1,6 @@
 import { Micro } from "@/components/typography/Micro";
 import { TOOLS, TOOL_CATEGORIES } from "@/lib/content/tools";
-import { ToolchainChips } from "./ToolchainChips";
+import { ToolchainMarquee } from "@/components/motion/ToolchainMarquee";
 
 export function Toolchain() {
   const grouped = TOOL_CATEGORIES.map((cat) => ({
@@ -22,7 +22,7 @@ export function Toolchain() {
           </h3>
           <Micro variant="mute">Fig. 04 — partial inventory</Micro>
         </div>
-        <ToolchainChips />
+        <ToolchainMarquee />
       </section>
 
       {/* Datasheet */}

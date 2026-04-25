@@ -4,49 +4,19 @@ import { CTA } from "@/components/ui/CTA";
 import { Micro } from "@/components/typography/Micro";
 import { CAPABILITIES } from "@/lib/content/capabilities";
 import { PARTNERS } from "@/lib/content/partners";
+import { HeroTerminal } from "@/components/motion/HeroTerminal";
 
 export function Hero() {
   return (
     <section
       id="top"
-      className="grid gap-12 relative min-h-[calc(100vh-56px)] border-b border-rule"
+      className="grid gap-16 relative min-h-[calc(100vh-56px)] border-b border-rule"
       style={{
-        gridTemplateColumns: "140px 1fr 320px",
-        padding: "112px 0 200px",
+        gridTemplateColumns: "1fr 320px",
+        padding: "96px 0 160px",
       }}
     >
-      {/* Spec column */}
-      <div className="flex flex-col gap-5 relative z-1 max-[1080px]:hidden">
-        <div className="flex flex-col gap-1">
-          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-ink-3">
-            Discipline
-          </span>
-          <span className="font-mono text-[12px] text-ink">
-            Data · AI · Design
-          </span>
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-ink-3">
-            Status
-          </span>
-          <span className="font-mono text-[12px] text-accent-ink flex items-center gap-0.5">
-            <span
-              className="inline-block w-1.5 h-1.5 rounded-full bg-accent mr-0.5"
-              style={{ animation: "pulse 2.2s ease-in-out infinite" }}
-              aria-hidden="true"
-            />
-            Open · Q3 2026
-          </span>
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-ink-3">
-            Ref.
-          </span>
-          <span className="font-mono text-[12px] text-ink">VRD–001</span>
-        </div>
-      </div>
-
-      {/* Center: Callsign + lede + CTAs */}
+      {/* Main: Callsign + lede + CTAs */}
       <div className="relative z-1">
         <Callsign />
         <Lede className="mt-9">
@@ -54,7 +24,7 @@ export function Hero() {
           move their business forward. Strategy-first. Technology-led. Taken on
           as a second team, or the first one that was missing.
         </Lede>
-        <div className="flex gap-7 mt-11 items-center flex-wrap">
+        <div className="flex gap-4 mt-11 items-center flex-wrap">
           <CTA href="/#manifest" variant="primary">
             view_selected_work
           </CTA>
@@ -104,6 +74,12 @@ export function Hero() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Studio log terminal */}
+        <div className="-mr-7">
+          <Micro className="mb-3.5 block">Studio log — Fig. 03</Micro>
+          <HeroTerminal />
         </div>
       </div>
     </section>
