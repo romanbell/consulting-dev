@@ -1,0 +1,22 @@
+/* TEAM */
+
+Partner: Jeffrey Wang
+Role: Strategy & Engineering
+Location: New York, NY
+
+Partner: Roman Bellisari
+Role: Design & Engineering
+Location: New York, NY
+
+/* SITE */
+
+Built with: Next.js 15, React 19, TypeScript, Tailwind CSS v4
+Fonts: Geist, Geist Mono
+Motion: Framer Motion, Lenis
+Last updated: 2026
+Standards: HTML5, CSS3, WCAG 2.1 AA
+
+/* THANKS */
+
+Set in Geist by Vercel.
+Hand-built, 2026.

@@ -1,70 +1,104 @@
-# Getting Started with Create React App
+# Veridium Studio — Portfolio Site
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Veridium is a two-person data and technology studio based in New York, founded in 2024 by Jeffrey Wang and Roman Bellisari. This repository contains the production portfolio site: a server-rendered, multi-route Next.js application designed to feel like work that came out of a serious design studio. The reference points are Studio Lin (typographic discipline, editorial rigor) and locomotive.ca (motion craft, scroll choreography).
 
-## Available Scripts
+## Local Development
 
-In the project directory, you can run:
+```bash
+pnpm install
+pnpm dev          # Start dev server with Turbopack
+pnpm build        # Production build
+pnpm lint         # ESLint
+pnpm typecheck    # TypeScript strict check
+```
 
-### `npm start`
+Requires Node 20 LTS or later. Uses pnpm as the package manager.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Branch Strategy
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This repo ships two versions of the site on two branches. See [BRANCHES.md](./BRANCHES.md) for the full delta.
 
-### `npm test`
+| Branch   | Codename    | Description |
+|----------|-------------|-------------|
+| `main`   | Editorial   | Restrained motion. Static chip cloud, crosshair cursor in hero only, no custom cursor, no terminal. The "respectable" version. |
+| `motion` | Kinetic     | Full motion. 3-row marquee, hero terminal, custom cursor with magnetic CTAs, page transitions. |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Both branches share the same content (`lib/`), routing, IA, SEO config, and accessibility floor.
 
-### `npm run build`
+## Design Token Table
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+All tokens are CSS custom properties defined in `app/globals.css` under `:root`, consumed by Tailwind v4 via `@theme`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--paper` | `#F3F0E8` | Primary background |
+| `--paper-2` | `#EDE9DF` | Secondary background (cards, hovers) |
+| `--ink` | `#17171A` | Primary text |
+| `--ink-2` | `#45454A` | Secondary text |
+| `--ink-3` | `#8A8A8E` | Tertiary text, labels |
+| `--rule` | `#D9D4C6` | Primary dividers |
+| `--rule-2` | `#C8C2B0` | Secondary dividers (dashed) |
+| `--accent` | `oklch(0.62 0.07 180)` | Accent color (teal), dots, indicators |
+| `--accent-ink` | `oklch(0.48 0.08 180)` | Accent for text (darker teal) |
+| `--ease-studio` | `cubic-bezier(0.2, 0.7, 0.2, 1)` | Universal easing curve |
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Motion Principles
 
-### `npm run eject`
+- **Easing**: `cubic-bezier(0.2, 0.7, 0.2, 1)` everywhere, defined as `--ease-studio` in CSS.
+- **Scroll reveals**: 900ms duration, 10px translateY, fade in. Children stagger by 70ms.
+- **Line-draw rules**: 1200ms, width 0 to 100%.
+- **Hover underlines**: 350ms scaleX from left.
+- **Reduced motion**: All non-essential animation is gated behind `prefers-reduced-motion: reduce`. Elements snap to their end state instantly. Tested.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## SEO Checklist
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Before each deploy, verify:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- [ ] All routes return 200 and render full content in view-source
+- [ ] `<title>` and `<meta name="description">` are set per-route
+- [ ] Open Graph and Twitter Card meta tags present on all routes
+- [ ] JSON-LD blocks present: Organization (home), WebSite (home), BreadcrumbList (work routes), CreativeWork (project pages)
+- [ ] `sitemap.xml` enumerates all routes including project slugs
+- [ ] `robots.txt` allows all crawlers including GPTBot, ClaudeBot, PerplexityBot
+- [ ] Canonical URLs are correct
+- [ ] No content is JS-only (all copy is in the server-rendered HTML)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## LLM Crawler Policy
 
-## Learn More
+The `robots.txt` explicitly allows GPTBot, ClaudeBot, PerplexityBot, and Google-Extended. This is intentional: the studio wants maximum discoverability by both traditional search engines and LLM-based retrieval systems.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Decisions Log
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. **Tailwind v4 over v3**: v4 uses `@theme` for CSS variable integration, eliminating the need for a large `tailwind.config.ts`. Tokens live in CSS where they belong.
+2. **Two branches (main/motion)**: Client requested A/B comparison of editorial vs. kinetic feel. Same content, different component layers. Diff is auditable.
+3. **Lenis for smooth scroll**: Lightweight, well-maintained, provides the locomotive-style feel without the bundle weight of GSAP ScrollTrigger.
+4. **Framer Motion over GSAP**: Better React integration, tree-shakeable, plays well with Server Components. Only loaded in client components that need it.
+5. **No shadcn/ui**: The design language is too specific. Generic component libraries would fight the aesthetic. Primitives are simple enough to write from scratch.
+6. **No CMS**: Content is colocated as TypeScript constants. Two-person studio does not need a CMS. Content changes are code changes with full type safety.
+7. **Static generation for project pages**: `generateStaticParams` pre-renders all eight project routes at build time. Zero runtime cost for the most-crawled pages.
+8. **distDir set to `.next-build`**: Local development workaround for a root-owned `.next` directory from a prior build. On Vercel, this can be changed back to `.next` or removed entirely.
+9. **All content SSR-first**: Every word of copy appears in the initial HTML payload. Marquee, terminal, and hover plate hydrate on top of static content. A crawler sees everything.
 
-### Code Splitting
+## Deployment (Vercel)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+1. Import project from GitHub
+2. Framework preset: Next.js (auto-detected)
+3. Build command: `pnpm build`
+4. Output directory: `.next-build` (or remove `distDir` from `next.config.ts` for default)
+5. Node.js version: 20.x
+6. No environment variables required for the base build
 
-### Analyzing the Bundle Size
+All routes are statically generated at build time. No Edge or serverless functions needed for the core site.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Browser Support
 
-### Making a Progressive Web App
+Last 2 versions of: Chrome, Firefox, Safari (16+), Edge. Tested on iOS Safari, Chrome Android.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Viewport range: 360px to 2560px.
 
-### Advanced Configuration
+## Credits
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Veridium** — Jeffrey Wang, Roman Bellisari
+- Set in **Geist** and **Geist Mono** by Vercel
+- Built with Next.js 15, React 19, TypeScript, Tailwind CSS v4, Framer Motion, Lenis
+- Hand-built, 2026
