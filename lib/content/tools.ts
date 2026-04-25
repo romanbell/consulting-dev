@@ -1,0 +1,143 @@
+export type ToolCategory = "model" | "infra" | "data" | "ml" | "app" | "obs";
+
+export interface Tool {
+  name: string;
+  category: ToolCategory;
+}
+
+export const TOOLS: Tool[] = [
+  // Foundation models
+  { name: "Claude 3.5 Sonnet", category: "model" },
+  { name: "Claude 3 Opus", category: "model" },
+  { name: "GPT-4o", category: "model" },
+  { name: "GPT-4.1", category: "model" },
+  { name: "o1 / o1-mini", category: "model" },
+  { name: "o3-mini", category: "model" },
+  { name: "Gemini 1.5 Pro", category: "model" },
+  { name: "Gemini 2.0 Flash", category: "model" },
+  { name: "Llama 3.1 405B", category: "model" },
+  { name: "Llama 3.3 70B", category: "model" },
+  { name: "Mistral Large 2", category: "model" },
+  { name: "Mixtral 8x22B", category: "model" },
+  { name: "Command R+", category: "model" },
+  { name: "DeepSeek V3", category: "model" },
+  { name: "Qwen 2.5", category: "model" },
+  { name: "Phi-4", category: "model" },
+  // AI infra / gateway
+  { name: "OpenRouter", category: "ml" },
+  { name: "Helicone", category: "obs" },
+  { name: "LangSmith", category: "obs" },
+  { name: "Langfuse", category: "obs" },
+  { name: "Braintrust", category: "obs" },
+  { name: "Weights & Biases", category: "obs" },
+  { name: "Portkey", category: "ml" },
+  { name: "LiteLLM", category: "ml" },
+  { name: "Together AI", category: "ml" },
+  { name: "Fireworks AI", category: "ml" },
+  { name: "Replicate", category: "ml" },
+  { name: "Modal", category: "ml" },
+  { name: "Baseten", category: "ml" },
+  // Orchestration
+  { name: "LangChain", category: "ml" },
+  { name: "LangGraph", category: "ml" },
+  { name: "LlamaIndex", category: "ml" },
+  { name: "CrewAI", category: "ml" },
+  { name: "DSPy", category: "ml" },
+  { name: "Instructor", category: "ml" },
+  { name: "Outlines", category: "ml" },
+  { name: "Pydantic AI", category: "ml" },
+  // Vector / retrieval
+  { name: "Pinecone", category: "data" },
+  { name: "Qdrant", category: "data" },
+  { name: "pgvector", category: "data" },
+  // Classical ML
+  { name: "PyTorch", category: "ml" },
+  { name: "JAX", category: "ml" },
+  { name: "scikit-learn", category: "ml" },
+  { name: "XGBoost", category: "ml" },
+  { name: "LightGBM", category: "ml" },
+  { name: "Hugging Face", category: "ml" },
+  { name: "Transformers", category: "ml" },
+  { name: "vLLM", category: "ml" },
+  { name: "Ollama", category: "ml" },
+  // Warehouses / data
+  { name: "Snowflake", category: "data" },
+  { name: "BigQuery", category: "data" },
+  { name: "Databricks", category: "data" },
+  { name: "ClickHouse", category: "data" },
+  { name: "DuckDB", category: "data" },
+  // SQL
+  { name: "Postgres", category: "data" },
+  { name: "MySQL", category: "data" },
+  { name: "SQLite", category: "data" },
+  { name: "Neon", category: "data" },
+  // NoSQL
+  { name: "MongoDB", category: "data" },
+  { name: "DynamoDB", category: "data" },
+  { name: "Redis", category: "data" },
+  { name: "Elasticsearch", category: "data" },
+  // Pipelines
+  { name: "dbt", category: "data" },
+  { name: "Airflow", category: "data" },
+  { name: "Dagster", category: "data" },
+  { name: "Fivetran", category: "data" },
+  { name: "Kafka", category: "data" },
+  // Cloud / infra
+  { name: "AWS", category: "infra" },
+  { name: "GCP", category: "infra" },
+  { name: "Azure", category: "infra" },
+  { name: "Cloudflare Workers", category: "infra" },
+  { name: "Vercel", category: "infra" },
+  { name: "Render", category: "infra" },
+  { name: "Fly.io", category: "infra" },
+  { name: "Railway", category: "infra" },
+  { name: "Terraform", category: "infra" },
+  { name: "Pulumi", category: "infra" },
+  { name: "Kubernetes", category: "infra" },
+  { name: "Docker", category: "infra" },
+  // App / frontend / backend
+  { name: "Next.js", category: "app" },
+  { name: "React", category: "app" },
+  { name: "Remix", category: "app" },
+  { name: "SvelteKit", category: "app" },
+  { name: "Astro", category: "app" },
+  { name: "TypeScript", category: "app" },
+  { name: "Bun", category: "app" },
+  { name: "Deno", category: "app" },
+  { name: "Tailwind", category: "app" },
+  { name: "shadcn/ui", category: "app" },
+  { name: "Framer Motion", category: "app" },
+  { name: "FastAPI", category: "app" },
+  { name: "Hono", category: "app" },
+  { name: "tRPC", category: "app" },
+  { name: "Supabase", category: "data" },
+  { name: "Convex", category: "data" },
+  { name: "Clerk", category: "app" },
+  // Observability / eval
+  { name: "Datadog", category: "obs" },
+  { name: "Grafana", category: "obs" },
+  { name: "Sentry", category: "obs" },
+  { name: "PostHog", category: "obs" },
+  { name: "Metabase", category: "obs" },
+  { name: "Hex", category: "obs" },
+  { name: "Mode", category: "obs" },
+];
+
+export const TOOL_CATEGORIES = [
+  { id: "model" as const, label: "Foundation models", desig: "U" },
+  { id: "infra" as const, label: "Infrastructure", desig: "I" },
+  { id: "data" as const, label: "Data / warehouse", desig: "D" },
+  { id: "ml" as const, label: "ML / AI stack", desig: "M" },
+  { id: "app" as const, label: "App / frontend", desig: "A" },
+  { id: "obs" as const, label: "Observability", desig: "O" },
+];
+
+export const TOOL_FILTERS = [
+  { key: "all", label: "All" },
+  { key: "model", label: "Models" },
+  { key: "infra", label: "Infra / Cloud" },
+  { key: "data", label: "Data / Warehouse" },
+  { key: "ml", label: "ML / AI" },
+  { key: "app", label: "App / Frontend" },
+  { key: "obs", label: "Observability" },
+] as const;
