@@ -16,54 +16,41 @@ export function CustomCursor() {
       @media (hover: none) { *, *::before, *::after { cursor: auto !important; } }`;
     document.head.appendChild(style);
 
-    // Position square state for the tiny trailing lerp
-    let sx = 0, sy = 0, tx = 0, ty = 0;
     let visible = false;
-    let raf = 0;
+    const cross = crossRef.current;
+    const square = squareRef.current;
 
     function onMove(e: MouseEvent) {
-      const x = e.clientX, y = e.clientY;
-      tx = x; ty = y;
-
-      // Crosshair: set left/top directly, zero intermediate frames
-      if (crossRef.current) {
-        crossRef.current.style.left = x - 11 + "px";
-        crossRef.current.style.top = y - 11 + "px";
+      // Use CSS custom properties + translate3d for GPU-only compositing, no layout
+      if (cross) {
+        cross.style.setProperty("--cx", e.clientX + "px");
+        cross.style.setProperty("--cy", e.clientY + "px");
+      }
+      if (square) {
+        square.style.setProperty("--cx", e.clientX + "px");
+        square.style.setProperty("--cy", e.clientY + "px");
       }
 
-      // Status bar
+      // Status bar coords
       const sb = document.getElementById("sbCoords");
-      if (sb) sb.textContent = `[${String(Math.round(x)).padStart(3, "0")},${String(Math.round(y)).padStart(3, "0")}]`;
+      if (sb) sb.textContent = `[${String(Math.round(e.clientX)).padStart(3, "0")},${String(Math.round(e.clientY)).padStart(3, "0")}]`;
 
       if (!visible) {
         visible = true;
-        if (crossRef.current) crossRef.current.style.opacity = "1";
-        if (squareRef.current) squareRef.current.style.opacity = "0.12";
-        sx = x; sy = y;
+        if (cross) cross.style.opacity = "1";
+        if (square) square.style.opacity = "0.1";
       }
     }
-
-    function loop() {
-      // Square: lerp toward target, very close follow
-      sx += (tx - sx) * 0.55;
-      sy += (ty - sy) * 0.55;
-      if (squareRef.current) {
-        squareRef.current.style.left = sx - 5 + "px";
-        squareRef.current.style.top = sy - 5 + "px";
-      }
-      raf = requestAnimationFrame(loop);
-    }
-    raf = requestAnimationFrame(loop);
 
     function onLeave() {
       visible = false;
-      if (crossRef.current) crossRef.current.style.opacity = "0";
-      if (squareRef.current) squareRef.current.style.opacity = "0";
+      if (cross) cross.style.opacity = "0";
+      if (square) square.style.opacity = "0";
     }
     function onEnter() {
       visible = true;
-      if (crossRef.current) crossRef.current.style.opacity = "1";
-      if (squareRef.current) squareRef.current.style.opacity = "0.12";
+      if (cross) cross.style.opacity = "1";
+      if (square) square.style.opacity = "0.1";
     }
 
     document.addEventListener("mousemove", onMove);
@@ -91,26 +78,28 @@ export function CustomCursor() {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseleave", onLeave);
       document.removeEventListener("mouseenter", onEnter);
-      cancelAnimationFrame(raf);
       cleanups.forEach((fn) => fn());
     };
   }, [reduced]);
 
   if (reduced) return null;
 
+  // Both elements use translate3d driven by CSS custom properties
+  // This keeps everything on the compositor thread, no layout/paint
+  const cursorBase: React.CSSProperties = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    pointerEvents: "none",
+    willChange: "transform",
+    transform: "translate3d(var(--cx, 0px), var(--cy, 0px), 0) translate(-50%, -50%)",
+  };
+
   return (
     <>
       <div
         ref={crossRef}
-        style={{
-          position: "fixed",
-          width: "23px",
-          height: "23px",
-          opacity: 0,
-          pointerEvents: "none",
-          zIndex: 100,
-          willChange: "left, top",
-        }}
+        style={{ ...cursorBase, width: "23px", height: "23px", opacity: 0, zIndex: 100 }}
       >
         <span style={{ position: "absolute", top: "50%", left: 0, right: 0, height: "1px", background: "var(--ink)", opacity: 0.6, transform: "translateY(-0.5px)" }} />
         <span style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: "1px", background: "var(--ink)", opacity: 0.6, transform: "translateX(-0.5px)" }} />
@@ -118,14 +107,13 @@ export function CustomCursor() {
       <div
         ref={squareRef}
         style={{
-          position: "fixed",
+          ...cursorBase,
           width: "10px",
           height: "10px",
           border: "1px solid var(--accent)",
           opacity: 0,
-          pointerEvents: "none",
           zIndex: 99,
-          willChange: "left, top",
+          transition: "transform 0.04s linear",
         }}
       />
     </>
