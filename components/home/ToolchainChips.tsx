@@ -40,7 +40,7 @@ export function ToolchainChips() {
               className="w-1 h-1 rounded-full inline-block"
               style={{
                 background:
-                  tool.category === "model"
+                  tool.category === "ai"
                     ? "var(--accent)"
                     : "var(--ink-3)",
               }}

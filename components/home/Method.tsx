@@ -5,54 +5,78 @@ import { Headline } from "@/components/typography/Headline";
 import { METHOD_STEPS } from "@/lib/content/method";
 
 function PatchbayGlyph({ active }: { active: boolean }) {
+  // Modular nodes connected by signal lines. On hover, nodes pulse in sequence.
+  const nodes = [
+    { x: 6, y: 8 },
+    { x: 22, y: 20 },
+    { x: 38, y: 8 },
+    { x: 54, y: 16 },
+    { x: 66, y: 10 },
+  ];
   return (
     <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
-      {/* Patch jacks */}
-      <circle cx="8" cy="14" r="3" />
-      <circle cx="26" cy="14" r="3" />
-      <circle cx="44" cy="14" r="3" />
-      {/* Cable 1: undulates on hover */}
-      <path
-        d="M11.5 14 C 17 5, 22 5, 26 14"
-        fill="none"
-        stroke={active ? "var(--accent-ink)" : "currentColor"}
-        style={{ animation: active ? "cable-wave 1.6s ease-in-out infinite" : "none" }}
-      />
-      {/* Cable 2: undulates opposite phase */}
-      <path
-        d="M29.5 14 C 35 23, 40 23, 44 14"
-        fill="none"
-        stroke={active ? "var(--accent-ink)" : "currentColor"}
-        style={{ animation: active ? "cable-wave-2 1.6s ease-in-out infinite" : "none" }}
-      />
-      {/* Signal LED */}
-      <circle cx="56" cy="14" r="2" fill={active ? "var(--accent)" : "currentColor"} stroke="none"
-        style={{ animation: "blinkSig 1.4s ease-in-out infinite" }} />
+      {/* Connection lines */}
+      {nodes.map((n, i) => {
+        const next = nodes[i + 1];
+        if (!next) return null;
+        return (
+          <line key={i} x1={n.x} y1={n.y} x2={next.x} y2={next.y}
+            stroke={active ? "var(--accent-ink)" : "currentColor"}
+            strokeWidth={active ? "1.2" : "0.8"}
+            opacity={active ? 0.8 : 0.4}
+            style={{ transition: "all 0.3s ease" }}
+          />
+        );
+      })}
+      {/* Module nodes */}
+      {nodes.map((n, i) => (
+        <g key={i}>
+          <rect
+            x={n.x - 3} y={n.y - 3} width={6} height={6}
+            fill={active ? "var(--accent-ink)" : "none"}
+            stroke={active ? "var(--accent-ink)" : "currentColor"}
+            strokeWidth="1"
+            opacity={active ? 1 : 0.6}
+            style={{
+              transition: `all 0.25s ease ${i * 0.08}s`,
+              transform: active ? "scale(1.2)" : "scale(1)",
+              transformOrigin: `${n.x}px ${n.y}px`,
+            }}
+          />
+          {/* Inner dot on hover */}
+          <circle cx={n.x} cy={n.y} r="1" fill="var(--paper)"
+            opacity={active ? 1 : 0}
+            style={{ transition: `opacity 0.2s ease ${i * 0.08}s` }}
+          />
+        </g>
+      ))}
     </svg>
   );
 }
 
 function SequencerGlyph({ active }: { active: boolean }) {
-  const heights = active ? [12, 18, 6, 16, 10, 20, 4, 14] : [8, 16, 4, 12, 6, 18, 4, 8];
-  const ys = heights.map(h => 14 - h / 2);
+  const restH  = [6, 14, 4, 10, 5, 16, 3, 8];
+  const activeH = [14, 20, 8, 18, 10, 22, 6, 16];
+  const heights = active ? activeH : restH;
   return (
     <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
-      {heights.map((h, i) => (
-        <rect
-          key={i}
-          x={3 + i * 8.5}
-          y={ys[i]}
-          width="6"
-          height={h}
-          fill={active && (i === 1 || i === 3 || i === 5) ? "var(--accent-ink)" : (i % 2 === 1 ? "currentColor" : "none")}
-          style={{
-            transition: `height 0.35s cubic-bezier(0.2,0.7,0.2,1) ${i * 0.04}s, y 0.35s cubic-bezier(0.2,0.7,0.2,1) ${i * 0.04}s, fill 0.2s ease`,
-          }}
-        />
-      ))}
-      {/* Playhead */}
-      <line x1={active ? "68" : "3"} y1="2" x2={active ? "68" : "3"} y2="26" stroke="var(--accent-ink)" strokeWidth="1.5" opacity={active ? 0.8 : 0}
-        style={{ transition: "x1 0.8s cubic-bezier(0.2,0.7,0.2,1), x2 0.8s cubic-bezier(0.2,0.7,0.2,1), opacity 0.2s ease" }} />
+      {heights.map((h, i) => {
+        const y = 26 - h;
+        return (
+          <rect
+            key={i}
+            x={3 + i * 8.5}
+            y={y}
+            width="5"
+            height={h}
+            fill={active ? "var(--accent-ink)" : (i % 2 === 0 ? "currentColor" : "none")}
+            stroke={active ? "var(--accent-ink)" : "currentColor"}
+            style={{
+              transition: `all 0.3s cubic-bezier(0.2,0.7,0.2,1) ${i * 0.035}s`,
+            }}
+          />
+        );
+      })}
     </svg>
   );
 }

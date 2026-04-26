@@ -8,13 +8,30 @@ export function ToolchainMarquee() {
   const reduced = useReducedMotion();
   const [filter, setFilter] = useState("all");
 
-  const filtered = filter === "all" ? TOOLS : TOOLS.filter((t) => t.category === filter);
-
   // Split into 3 rows
   const rows: typeof TOOLS[] = [[], [], []];
-  filtered.forEach((t, i) => {
+  TOOLS.forEach((t, i) => {
     rows[i % 3]?.push(t);
   });
+
+  function chipStyle(cat: string) {
+    const isMatch = filter === "all" || filter === cat;
+    const isAi = cat === "ai";
+    return {
+      transitionTimingFunction: "var(--ease-studio)",
+      borderColor: isAi && isMatch ? "var(--accent-ink)" : isMatch ? undefined : "var(--rule-2)",
+      color: isAi && isMatch ? "var(--accent-ink)" : isMatch ? undefined : undefined,
+      opacity: isMatch ? 1 : 0.2,
+      cursor: "default" as const,
+    };
+  }
+
+  function dotBg(cat: string) {
+    const isMatch = filter === "all" || filter === cat;
+    if (cat === "ai" && isMatch) return "var(--accent)";
+    if (isMatch) return "var(--ink-3)";
+    return "var(--rule-2)";
+  }
 
   return (
     <>
@@ -24,8 +41,9 @@ export function ToolchainMarquee() {
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className="font-mono text-[10px] tracking-[0.12em] uppercase py-1.5 px-3 border rounded-full transition-all duration-200"
+            className="font-mono text-[10px] tracking-[0.12em] uppercase py-1.5 px-3 border rounded-full transition-all duration-250"
             style={{
+              transitionTimingFunction: "var(--ease-studio)",
               background: filter === f.key ? "var(--ink)" : "transparent",
               color: filter === f.key ? "var(--paper)" : "var(--ink-2)",
               borderColor: filter === f.key ? "var(--ink)" : "var(--rule-2)",
@@ -39,16 +57,15 @@ export function ToolchainMarquee() {
 
       {reduced ? (
         <div className="flex flex-wrap gap-1.5" style={{ paddingLeft: 188 }}>
-          {filtered.map((tool) => (
+          {TOOLS.map((tool) => (
             <span
               key={tool.name}
-              className="font-mono text-[12px] py-[7px] px-3.5 border border-rule-2 rounded-full inline-flex items-center gap-2 text-ink-2 tracking-[0.02em] whitespace-nowrap"
+              className="font-mono text-[12px] py-[7px] px-3.5 border border-rule-2 rounded-full inline-flex items-center gap-2 text-ink-2 tracking-[0.02em] whitespace-nowrap transition-opacity duration-250"
+              style={{ opacity: filter === "all" || filter === tool.category ? 1 : 0.2 }}
             >
               <span
                 className="w-[5px] h-[5px] rounded-full inline-block"
-                style={{
-                  background: tool.category === "model" ? "var(--accent)" : "var(--ink-3)",
-                }}
+                style={{ background: dotBg(tool.category) }}
                 aria-hidden="true"
               />
               {tool.name}
@@ -68,24 +85,18 @@ export function ToolchainMarquee() {
           {rows.map((row, rowIdx) => {
             if (row.length === 0) return null;
             const direction = rowIdx === 1 ? "marquee-r" : "marquee-l";
-            const duration = [80, 95, 65][rowIdx];
+            // 20% slower: 96, 114, 78 (was 80, 95, 65)
+            const duration = [96, 114, 78][rowIdx];
             const chips = row.map((tool) => (
               <span
                 key={tool.name}
                 className="font-mono text-[12px] py-[7px] px-3.5 border border-rule-2 rounded-full inline-flex items-center gap-2 text-ink-2 tracking-[0.02em] whitespace-nowrap shrink-0 mr-2 transition-all duration-250 hover:border-ink hover:text-ink hover:bg-paper hover:-translate-y-0.5"
-                style={{
-                  transitionTimingFunction: "var(--ease-studio)",
-                  borderColor: tool.category === "model" ? "var(--accent-ink)" : undefined,
-                  color: tool.category === "model" ? "var(--accent-ink)" : undefined,
-                  cursor: "default",
-                }}
+                style={chipStyle(tool.category)}
                 data-cat={tool.category}
               >
                 <span
                   className="w-[5px] h-[5px] rounded-full inline-block transition-all duration-200"
-                  style={{
-                    background: tool.category === "model" ? "var(--accent)" : "var(--ink-3)",
-                  }}
+                  style={{ background: dotBg(tool.category) }}
                   aria-hidden="true"
                 />
                 {tool.name}
@@ -94,7 +105,7 @@ export function ToolchainMarquee() {
 
             return (
               <div
-                key={`${rowIdx}-${filter}`}
+                key={rowIdx}
                 className="flex w-max py-4.5 will-change-transform group-hover:[animation-play-state:paused]"
                 style={{
                   animation: `${direction} ${duration}s linear infinite`,
