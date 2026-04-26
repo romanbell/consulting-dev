@@ -1,37 +1,40 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
 export function CustomCursor() {
   const reduced = useReducedMotion();
   const crossRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(false);
-  const posRef = useRef({ x: 0, y: 0, cx: 0, cy: 0, rx: 0, ry: 0 });
+  const squareRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(false);
 
   const handleMove = useCallback((e: MouseEvent) => {
-    posRef.current.x = e.clientX;
-    posRef.current.y = e.clientY;
+    // Move crosshair directly on the event, zero lag
+    if (crossRef.current) {
+      crossRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+    }
+    // Square trails just slightly via CSS transition
+    if (squareRef.current) {
+      squareRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+    }
 
+    // Status bar coords
     const el = document.getElementById("sbCoords");
     if (el) {
-      const x = String(Math.round(e.clientX)).padStart(3, "0");
-      const y = String(Math.round(e.clientY)).padStart(3, "0");
-      el.textContent = `[${x},${y}]`;
+      el.textContent = `[${String(Math.round(e.clientX)).padStart(3, "0")},${String(Math.round(e.clientY)).padStart(3, "0")}]`;
     }
 
     if (!activeRef.current) {
       activeRef.current = true;
-      setActive(true);
+      if (crossRef.current) crossRef.current.style.opacity = "1";
+      if (squareRef.current) squareRef.current.style.opacity = "0.12";
     }
   }, []);
 
   useEffect(() => {
     if (reduced) return;
 
-    // Force cursor: none on everything, no exceptions
     const style = document.createElement("style");
     style.textContent = `
       *, *::before, *::after { cursor: none !important; }
@@ -39,8 +42,16 @@ export function CustomCursor() {
     `;
     document.head.appendChild(style);
 
-    const onLeave = () => { activeRef.current = false; setActive(false); };
-    const onEnter = () => { activeRef.current = true; setActive(true); };
+    const onLeave = () => {
+      activeRef.current = false;
+      if (crossRef.current) crossRef.current.style.opacity = "0";
+      if (squareRef.current) squareRef.current.style.opacity = "0";
+    };
+    const onEnter = () => {
+      activeRef.current = true;
+      if (crossRef.current) crossRef.current.style.opacity = "1";
+      if (squareRef.current) squareRef.current.style.opacity = "0.12";
+    };
 
     document.addEventListener("mousemove", handleMove);
     document.addEventListener("mouseleave", onLeave);
@@ -67,33 +78,12 @@ export function CustomCursor() {
       });
     });
 
-    let raf: number;
-    function loop() {
-      const p = posRef.current;
-      // Crosshair: tight follow
-      p.cx += (p.x - p.cx) * 0.45;
-      p.cy += (p.y - p.cy) * 0.45;
-      // Square: close follow, just slightly behind
-      p.rx += (p.x - p.rx) * 0.35;
-      p.ry += (p.y - p.ry) * 0.35;
-
-      if (crossRef.current) {
-        crossRef.current.style.transform = `translate(${p.cx}px, ${p.cy}px) translate(-50%, -50%)`;
-      }
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${p.rx}px, ${p.ry}px) translate(-50%, -50%)`;
-      }
-      raf = requestAnimationFrame(loop);
-    }
-    raf = requestAnimationFrame(loop);
-
     return () => {
       style.remove();
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseleave", onLeave);
       document.removeEventListener("mouseenter", onEnter);
       cleanups.forEach((fn) => fn());
-      cancelAnimationFrame(raf);
     };
   }, [reduced, handleMove]);
 
@@ -101,16 +91,11 @@ export function CustomCursor() {
 
   return (
     <>
-      {/* Crosshair (+) */}
+      {/* Crosshair (+) — no lerp, direct on mousemove */}
       <div
         ref={crossRef}
         className="fixed top-0 left-0 pointer-events-none z-[100]"
-        style={{
-          width: "23px",
-          height: "23px",
-          opacity: active ? 1 : 0,
-          transition: "opacity 0.2s ease",
-        }}
+        style={{ width: "23px", height: "23px", opacity: 0 }}
       >
         <span
           className="absolute top-1/2 left-0 right-0 -translate-y-1/2"
@@ -122,16 +107,16 @@ export function CustomCursor() {
         />
       </div>
 
-      {/* Trailing square */}
+      {/* Trailing square — CSS transition for the tiny delay */}
       <div
-        ref={ringRef}
+        ref={squareRef}
         className="fixed top-0 left-0 pointer-events-none z-[99]"
         style={{
           width: "10px",
           height: "10px",
           border: "1px solid var(--accent)",
-          opacity: active ? 0.12 : 0,
-          transition: "opacity 0.3s ease",
+          opacity: 0,
+          transition: "transform 0.08s linear, opacity 0.3s ease",
         }}
       />
     </>

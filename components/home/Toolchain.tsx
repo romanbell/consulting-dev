@@ -192,39 +192,6 @@ export function Toolchain() {
             </div>
           </div>
 
-          {/* Title block */}
-          <div className="mt-6 border border-ink grid grid-cols-[1fr_2fr_1fr_1fr] bg-paper font-mono text-[10px] tracking-[0.08em] uppercase relative z-1 max-[1080px]:grid-cols-2">
-            {[
-              ["Sheet", "04.a · Rev. C"],
-              ["Title", "Engagement blueprint / delivery protocol"],
-              ["Drawn", "VRD-001"],
-              ["Status", "active"],
-            ].map(([k, v], i, arr) => (
-              <div
-                key={k}
-                className="flex flex-col gap-1 p-3.5"
-                style={{
-                  borderRight:
-                    i < arr.length - 1
-                      ? "1px solid var(--ink)"
-                      : "none",
-                }}
-              >
-                <span className="text-ink-3 text-[9px] tracking-[0.14em]">
-                  {k}
-                </span>
-                <span
-                  className="text-[11px] tracking-[0.08em] normal-case font-mono"
-                  style={{
-                    color:
-                      k === "Status" ? "var(--accent-ink)" : "var(--ink)",
-                  }}
-                >
-                  {v}
-                </span>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
     </>

@@ -14,7 +14,7 @@ export function Manifest() {
       }}
     >
       <div className="sticky top-6 max-[1080px]:static">
-        <Micro variant="accent">§ 01 — Manifest</Micro>
+        <Micro variant="accent">§ 01 — Projects</Micro>
         <div className="mt-2">
           <Micro variant="mute">08 projects</Micro>
         </div>
@@ -47,6 +47,10 @@ export function Manifest() {
           <Link
             key={p.n}
             href={`/work/${p.slug}`}
+            data-project-row
+            data-ref={`VRD-${p.n}`}
+            data-sector={p.sector}
+            data-outcome={`${p.metric} ${p.unit}`}
             className="grid gap-6 items-baseline py-5 border-b border-rule relative no-underline transition-all duration-250 hover:bg-paper-2 hover:pl-3.5 group"
             style={{
               gridTemplateColumns: "56px 1.6fr 2.4fr 220px 150px",
