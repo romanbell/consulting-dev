@@ -6,23 +6,15 @@ export interface Tool {
 }
 
 export const TOOLS: Tool[] = [
-  // Foundation models
-  { name: "Claude 3.5 Sonnet", category: "model" },
-  { name: "Claude 3 Opus", category: "model" },
-  { name: "GPT-4o", category: "model" },
-  { name: "GPT-4.1", category: "model" },
-  { name: "o1 / o1-mini", category: "model" },
-  { name: "o3-mini", category: "model" },
-  { name: "Gemini 1.5 Pro", category: "model" },
-  { name: "Gemini 2.0 Flash", category: "model" },
-  { name: "Llama 3.1 405B", category: "model" },
-  { name: "Llama 3.3 70B", category: "model" },
-  { name: "Mistral Large 2", category: "model" },
-  { name: "Mixtral 8x22B", category: "model" },
-  { name: "Command R+", category: "model" },
-  { name: "DeepSeek V3", category: "model" },
-  { name: "Qwen 2.5", category: "model" },
-  { name: "Phi-4", category: "model" },
+  // Foundation models (generalized)
+  { name: "Claude (Anthropic)", category: "model" },
+  { name: "GPT-4 series", category: "model" },
+  { name: "o1 / o3 reasoning", category: "model" },
+  { name: "Gemini (Google)", category: "model" },
+  { name: "Mistral / Mixtral", category: "model" },
+  { name: "DeepSeek", category: "model" },
+  { name: "Qwen", category: "model" },
+  { name: "Open-weight LLMs", category: "model" },
   // AI infra / gateway
   { name: "OpenRouter", category: "ml" },
   { name: "Helicone", category: "obs" },

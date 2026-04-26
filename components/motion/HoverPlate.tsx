@@ -6,42 +6,69 @@ interface PlateData {
   ref: string;
   sector: string;
   outcome: string;
-  sparkSvg: string;
 }
 
-function drawSpark(seed: string): string {
-  let s = 0;
-  for (const c of seed) s = (s * 31 + c.charCodeAt(0)) % 997;
-  const pts: [number, number][] = [];
-  for (let i = 0; i < 22; i++) {
-    const x = (i / 21) * 100;
-    s = (s * 1103515245 + 12345) & 0x7fffffff;
-    const y = 10 + (s % 40);
-    pts.push([x, y]);
+/** Generate a 5x5 mirrored pixel hash (GitHub identicon style) from a seed string */
+function generateIdenticon(seed: string): boolean[][] {
+  let h = 0;
+  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) & 0x7fffffff;
+
+  const grid: boolean[][] = [];
+  for (let row = 0; row < 5; row++) {
+    const line: boolean[] = [];
+    for (let col = 0; col < 3; col++) {
+      h = (h * 1103515245 + 12345) & 0x7fffffff;
+      line.push((h & 1) === 1);
+    }
+    // Mirror: col 3 = col 1, col 4 = col 0
+    line.push(line[1] ?? false);
+    line.push(line[0] ?? false);
+    grid.push(line);
   }
-  const poly = pts.map((p) => p.join(",")).join(" ");
-  const last = pts[pts.length - 1];
-  return `
-    <line x1="0" y1="50" x2="100" y2="50" stroke="#D9D4C6" stroke-width="0.3"/>
-    <polyline points="${poly}" fill="none" stroke="#17171A" stroke-width="0.6"/>
-    <circle cx="${last?.[0] ?? 0}" cy="${last?.[1] ?? 0}" r="1.2" fill="#17171A"/>
-  `;
+  return grid;
+}
+
+function IdenticonCanvas({ seed }: { seed: string }) {
+  const grid = generateIdenticon(seed);
+  const cellSize = 18;
+  const gap = 2;
+  const total = cellSize * 5 + gap * 4;
+
+  return (
+    <svg
+      width={total}
+      height={total}
+      viewBox={`0 0 ${total} ${total}`}
+      style={{ position: "relative", zIndex: 1 }}
+    >
+      {grid.map((row, ry) =>
+        row.map((on, cx) => (
+          <rect
+            key={`${ry}-${cx}`}
+            x={cx * (cellSize + gap)}
+            y={ry * (cellSize + gap)}
+            width={cellSize}
+            height={cellSize}
+            fill={on ? "var(--accent)" : "transparent"}
+            opacity={on ? 0.7 : 0}
+          />
+        ))
+      )}
+    </svg>
+  );
 }
 
 export function HoverPlate() {
   const plateRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
   const [data, setData] = useState<PlateData | null>(null);
   const [visible, setVisible] = useState(false);
 
   const onEnter = useCallback((e: Event) => {
     const el = e.currentTarget as HTMLElement;
-    const ref = el.dataset.ref ?? "";
     setData({
-      ref,
+      ref: el.dataset.ref ?? "",
       sector: el.dataset.sector ?? "",
       outcome: el.dataset.outcome ?? "",
-      sparkSvg: drawSpark(ref),
     });
     setVisible(true);
   }, []);
@@ -52,7 +79,7 @@ export function HoverPlate() {
 
   const onMove = useCallback((e: MouseEvent) => {
     if (!plateRef.current) return;
-    const pw = 300, ph = 240, pad = 16;
+    const pw = 280, ph = 220, pad = 16;
     let x = e.clientX + 20, y = e.clientY + 20;
     if (x + pw > window.innerWidth - pad) x = e.clientX - pw - 20;
     if (y + ph > window.innerHeight - pad) y = e.clientY - ph - 20;
@@ -61,7 +88,6 @@ export function HoverPlate() {
   }, []);
 
   useEffect(() => {
-    // Bind to all project rows. Use MutationObserver to catch late renders.
     function bind() {
       const rows = document.querySelectorAll<HTMLElement>("[data-project-row]");
       rows.forEach((r) => {
@@ -83,17 +109,10 @@ export function HoverPlate() {
     };
   }, [onEnter, onLeave, onMove]);
 
-  // Update SVG when data changes
-  useEffect(() => {
-    if (svgRef.current && data?.sparkSvg) {
-      svgRef.current.innerHTML = data.sparkSvg;
-    }
-  }, [data]);
-
   return (
     <div
       ref={plateRef}
-      className="fixed pointer-events-none z-[15] w-[300px] bg-paper text-[12px]"
+      className="fixed pointer-events-none z-[15] w-[280px] bg-paper text-[12px]"
       style={{
         border: "1px solid var(--ink)",
         padding: "14px",
@@ -103,11 +122,12 @@ export function HoverPlate() {
       }}
       aria-hidden="true"
     >
-      {/* Spark line preview */}
+      {/* Pixel hash identicon */}
       <div
-        className="w-full bg-paper-2 border border-rule-2 mb-3 grid place-items-center relative overflow-hidden"
-        style={{ height: "120px" }}
+        className="w-full bg-paper-2 border border-rule-2 mb-3 flex items-center justify-center relative overflow-hidden"
+        style={{ height: "110px" }}
       >
+        {/* Diagonal stripe texture */}
         <div
           className="absolute inset-0"
           style={{
@@ -115,12 +135,7 @@ export function HoverPlate() {
               "repeating-linear-gradient(-45deg, transparent 0 8px, rgba(23,23,26,.04) 8px 9px)",
           }}
         />
-        <svg
-          ref={svgRef}
-          viewBox="0 0 100 60"
-          preserveAspectRatio="xMidYMid meet"
-          style={{ width: "90%", height: "80%" }}
-        />
+        {data && <IdenticonCanvas seed={data.ref} />}
       </div>
       <div className="flex justify-between py-[5px] font-mono text-[10.5px] border-b border-dashed border-rule-2">
         <span className="text-ink-3 tracking-[0.06em]">REF.</span>

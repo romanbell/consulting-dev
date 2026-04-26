@@ -1,59 +1,72 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
 export function CustomCursor() {
   const reduced = useReducedMotion();
   const crossRef = useRef<HTMLDivElement>(null);
   const squareRef = useRef<HTMLDivElement>(null);
-  const activeRef = useRef(false);
-
-  const handleMove = useCallback((e: MouseEvent) => {
-    // Move crosshair directly on the event, zero lag
-    if (crossRef.current) {
-      crossRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-    }
-    // Square trails just slightly via CSS transition
-    if (squareRef.current) {
-      squareRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-    }
-
-    // Status bar coords
-    const el = document.getElementById("sbCoords");
-    if (el) {
-      el.textContent = `[${String(Math.round(e.clientX)).padStart(3, "0")},${String(Math.round(e.clientY)).padStart(3, "0")}]`;
-    }
-
-    if (!activeRef.current) {
-      activeRef.current = true;
-      if (crossRef.current) crossRef.current.style.opacity = "1";
-      if (squareRef.current) squareRef.current.style.opacity = "0.12";
-    }
-  }, []);
 
   useEffect(() => {
     if (reduced) return;
 
     const style = document.createElement("style");
-    style.textContent = `
-      *, *::before, *::after { cursor: none !important; }
-      @media (hover: none) { *, *::before, *::after { cursor: auto !important; } }
-    `;
+    style.textContent = `*, *::before, *::after { cursor: none !important; }
+      @media (hover: none) { *, *::before, *::after { cursor: auto !important; } }`;
     document.head.appendChild(style);
 
-    const onLeave = () => {
-      activeRef.current = false;
+    // Position square state for the tiny trailing lerp
+    let sx = 0, sy = 0, tx = 0, ty = 0;
+    let visible = false;
+    let raf = 0;
+
+    function onMove(e: MouseEvent) {
+      const x = e.clientX, y = e.clientY;
+      tx = x; ty = y;
+
+      // Crosshair: set left/top directly, zero intermediate frames
+      if (crossRef.current) {
+        crossRef.current.style.left = x - 11 + "px";
+        crossRef.current.style.top = y - 11 + "px";
+      }
+
+      // Status bar
+      const sb = document.getElementById("sbCoords");
+      if (sb) sb.textContent = `[${String(Math.round(x)).padStart(3, "0")},${String(Math.round(y)).padStart(3, "0")}]`;
+
+      if (!visible) {
+        visible = true;
+        if (crossRef.current) crossRef.current.style.opacity = "1";
+        if (squareRef.current) squareRef.current.style.opacity = "0.12";
+        sx = x; sy = y;
+      }
+    }
+
+    function loop() {
+      // Square: lerp toward target, very close follow
+      sx += (tx - sx) * 0.55;
+      sy += (ty - sy) * 0.55;
+      if (squareRef.current) {
+        squareRef.current.style.left = sx - 5 + "px";
+        squareRef.current.style.top = sy - 5 + "px";
+      }
+      raf = requestAnimationFrame(loop);
+    }
+    raf = requestAnimationFrame(loop);
+
+    function onLeave() {
+      visible = false;
       if (crossRef.current) crossRef.current.style.opacity = "0";
       if (squareRef.current) squareRef.current.style.opacity = "0";
-    };
-    const onEnter = () => {
-      activeRef.current = true;
+    }
+    function onEnter() {
+      visible = true;
       if (crossRef.current) crossRef.current.style.opacity = "1";
       if (squareRef.current) squareRef.current.style.opacity = "0.12";
-    };
+    }
 
-    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseleave", onLeave);
     document.addEventListener("mouseenter", onEnter);
 
@@ -63,60 +76,56 @@ export function CustomCursor() {
       const move = (e: Event) => {
         const me = e as MouseEvent;
         const r = (el as HTMLElement).getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const dx = (me.clientX - cx) * 0.2;
-        const dy = (me.clientY - cy) * 0.25;
+        const dx = (me.clientX - (r.left + r.width / 2)) * 0.2;
+        const dy = (me.clientY - (r.top + r.height / 2)) * 0.25;
         (el as HTMLElement).style.transform = `translate(${dx}px, ${dy}px)`;
       };
       const leave = () => { (el as HTMLElement).style.transform = ""; };
       el.addEventListener("mousemove", move);
       el.addEventListener("mouseleave", leave);
-      cleanups.push(() => {
-        el.removeEventListener("mousemove", move);
-        el.removeEventListener("mouseleave", leave);
-      });
+      cleanups.push(() => { el.removeEventListener("mousemove", move); el.removeEventListener("mouseleave", leave); });
     });
 
     return () => {
       style.remove();
-      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseleave", onLeave);
       document.removeEventListener("mouseenter", onEnter);
+      cancelAnimationFrame(raf);
       cleanups.forEach((fn) => fn());
     };
-  }, [reduced, handleMove]);
+  }, [reduced]);
 
   if (reduced) return null;
 
   return (
     <>
-      {/* Crosshair (+) — no lerp, direct on mousemove */}
       <div
         ref={crossRef}
-        className="fixed top-0 left-0 pointer-events-none z-[100]"
-        style={{ width: "23px", height: "23px", opacity: 0 }}
+        style={{
+          position: "fixed",
+          width: "23px",
+          height: "23px",
+          opacity: 0,
+          pointerEvents: "none",
+          zIndex: 100,
+          willChange: "left, top",
+        }}
       >
-        <span
-          className="absolute top-1/2 left-0 right-0 -translate-y-1/2"
-          style={{ height: "1px", background: "var(--ink)", opacity: 0.6 }}
-        />
-        <span
-          className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
-          style={{ width: "1px", background: "var(--ink)", opacity: 0.6 }}
-        />
+        <span style={{ position: "absolute", top: "50%", left: 0, right: 0, height: "1px", background: "var(--ink)", opacity: 0.6, transform: "translateY(-0.5px)" }} />
+        <span style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: "1px", background: "var(--ink)", opacity: 0.6, transform: "translateX(-0.5px)" }} />
       </div>
-
-      {/* Trailing square — CSS transition for the tiny delay */}
       <div
         ref={squareRef}
-        className="fixed top-0 left-0 pointer-events-none z-[99]"
         style={{
+          position: "fixed",
           width: "10px",
           height: "10px",
           border: "1px solid var(--accent)",
           opacity: 0,
-          transition: "transform 0.08s linear, opacity 0.3s ease",
+          pointerEvents: "none",
+          zIndex: 99,
+          willChange: "left, top",
         }}
       />
     </>
