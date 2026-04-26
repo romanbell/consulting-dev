@@ -14,11 +14,14 @@ export function ToolchainMarquee() {
     rows[i % 3]?.push(t);
   });
 
+  function handleFilter(key: string) {
+    setFilter((prev) => (prev === key ? "all" : key));
+  }
+
   function chipStyle(cat: string) {
     const isMatch = filter === "all" || filter === cat;
     return {
-      transitionTimingFunction: "var(--ease-studio)",
-      opacity: isMatch ? 1 : 0.15,
+      opacity: isMatch ? 1 : 0.4,
       cursor: "default" as const,
     };
   }
@@ -30,10 +33,10 @@ export function ToolchainMarquee() {
         {TOOL_FILTERS.map((f) => (
           <button
             key={f.key}
-            onClick={() => setFilter(f.key)}
-            className="font-mono text-[10px] tracking-[0.12em] uppercase py-1.5 px-3 border rounded-full transition-all duration-250"
+            onClick={() => handleFilter(f.key)}
+            className="font-mono text-[10px] tracking-[0.12em] uppercase py-1.5 px-3 border rounded-full"
             style={{
-              transitionTimingFunction: "var(--ease-studio)",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
               background: filter === f.key ? "var(--ink)" : "transparent",
               color: filter === f.key ? "var(--paper)" : "var(--ink-2)",
               borderColor: filter === f.key ? "var(--ink)" : "var(--rule-2)",
@@ -80,8 +83,8 @@ export function ToolchainMarquee() {
             const chips = row.map((tool) => (
               <span
                 key={tool.name}
-                className="font-mono text-[12px] py-[7px] px-3.5 border border-rule-2 rounded-full inline-flex items-center gap-2 text-ink-2 tracking-[0.02em] whitespace-nowrap shrink-0 mr-2 transition-all duration-250 hover:border-ink hover:text-ink hover:bg-paper hover:-translate-y-0.5"
-                style={chipStyle(tool.category)}
+                className="font-mono text-[12px] py-[7px] px-3.5 border border-rule-2 rounded-full inline-flex items-center gap-2 text-ink-2 tracking-[0.02em] whitespace-nowrap shrink-0 mr-2 hover:border-ink hover:text-ink hover:bg-paper hover:-translate-y-0.5"
+                style={{ ...chipStyle(tool.category), transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)" }}
                 data-cat={tool.category}
               >
                 <span
