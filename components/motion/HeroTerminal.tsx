@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
 type LogLevel = "INFO" | "OK" | "WARN" | "DEBUG";
@@ -51,40 +51,52 @@ const LEVEL_COLORS: Record<LogLevel, string> = {
   DEBUG: "text-ink-3 opacity-60",
 };
 
+interface Line {
+  id: number;
+  ts: string;
+  level: LogLevel;
+  msg: string;
+}
+
+let lineId = 0;
+
 export function HeroTerminal() {
   const reduced = useReducedMotion();
   const termRef = useRef<HTMLDivElement>(null);
-  const [lines, setLines] = useState<
-    { ts: string; level: LogLevel; msg: string }[]
-  >(() => {
-    const seed: { ts: string; level: LogLevel; msg: string }[] = [];
+  const [lines, setLines] = useState<Line[]>(() => {
+    const seed: Line[] = [];
     for (let i = 0; i < 5; i++) {
       const entry = LOG_ENTRIES[i];
-      if (entry) seed.push({ ts: "00:00:00", level: entry.level, msg: entry.msg });
+      if (entry) seed.push({ id: lineId++, ts: "00:00:00", level: entry.level, msg: entry.msg });
     }
     return seed;
   });
   const indexRef = useRef(5);
+  const newestIdRef = useRef(-1);
+
+  const addLine = useCallback(() => {
+    const i = indexRef.current % LOG_ENTRIES.length;
+    const entry = LOG_ENTRIES[i];
+    if (!entry) return;
+    indexRef.current++;
+    const newId = lineId++;
+    newestIdRef.current = newId;
+    setLines((prev) => {
+      const next = [...prev, { id: newId, ts: timestamp(), level: entry.level, msg: entry.msg }];
+      if (next.length > MAX_LINES) return next.slice(-MAX_LINES);
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (reduced) return;
 
+    // Fix seed timestamps
     setLines((prev) => prev.map((line) => ({ ...line, ts: timestamp() })));
 
-    const interval = setInterval(() => {
-      const i = indexRef.current % LOG_ENTRIES.length;
-      const entry = LOG_ENTRIES[i];
-      if (!entry) return;
-      indexRef.current++;
-      setLines((prev) => {
-        const next = [...prev, { ts: timestamp(), level: entry.level, msg: entry.msg }];
-        if (next.length > MAX_LINES) return next.slice(-MAX_LINES);
-        return next;
-      });
-    }, 1800);
-
+    const interval = setInterval(addLine, 1800);
     return () => clearInterval(interval);
-  }, [reduced]);
+  }, [reduced, addLine]);
 
   return (
     <div
@@ -100,29 +112,31 @@ export function HeroTerminal() {
       }}
       aria-hidden="true"
     >
-      {lines.map((line, i) => (
-        <div
-          key={`${line.ts}-${i}`}
-          className="flex gap-0 whitespace-nowrap px-3 py-px"
-          style={{ animation: "ht-in 0.45s ease forwards" }}
-        >
-          <span className="text-ink-3 shrink-0 w-[62px]">{line.ts}</span>
-          <span
-            className={`shrink-0 w-[52px] ${LEVEL_COLORS[line.level]}`}
+      {lines.map((line, i) => {
+        // Only animate the newest line (the one just added)
+        const isNewest = line.id === newestIdRef.current;
+        return (
+          <div
+            key={line.id}
+            className="flex gap-0 whitespace-nowrap px-3 py-px"
+            style={isNewest ? { animation: "ht-in 0.45s ease forwards" } : undefined}
           >
-            [{line.level}]
-          </span>
-          <span className="text-ink overflow-hidden text-ellipsis min-w-0">
-            {line.msg}
-          </span>
-          {i === lines.length - 1 && (
-            <span
-              className="inline-block w-[5px] h-[10px] bg-ink align-[-1px] ml-0.5"
-              style={{ animation: "caret 1.05s steps(2) infinite" }}
-            />
-          )}
-        </div>
-      ))}
+            <span className="text-ink-3 shrink-0 w-[62px]">{line.ts}</span>
+            <span className={`shrink-0 w-[52px] ${LEVEL_COLORS[line.level]}`}>
+              [{line.level}]
+            </span>
+            <span className="text-ink overflow-hidden text-ellipsis min-w-0">
+              {line.msg}
+            </span>
+            {i === lines.length - 1 && (
+              <span
+                className="inline-block w-[5px] h-[10px] bg-ink align-[-1px] ml-0.5"
+                style={{ animation: "caret 1.05s steps(2) infinite" }}
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

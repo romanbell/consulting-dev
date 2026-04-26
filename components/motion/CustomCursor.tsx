@@ -133,7 +133,7 @@ export function CustomCursor() {
           height: "10px",
           borderRadius: "50%",
           border: "1px solid var(--accent)",
-          opacity: active ? 0.35 : 0,
+          opacity: active ? 0.18 : 0,
           transition: "opacity 0.3s ease",
         }}
       />

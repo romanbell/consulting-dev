@@ -8,14 +8,14 @@ export function useLenis() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.8,
-      easing: (t: number) => 1 - Math.pow(1 - t, 4),
+      duration: 1.0,
+      easing: (t: number) => 1 - Math.pow(1 - t, 3),
       touchMultiplier: 2,
       smoothWheel: true,
     });
     lenisRef.current = lenis;
 
-    // Wire up anchor clicks to use Lenis scrollTo for silky smooth jumps
+    // Wire up anchor clicks to use Lenis scrollTo
     function handleClick(e: MouseEvent) {
       const target = e.target as HTMLElement;
       const anchor = target.closest("a[href]") as HTMLAnchorElement | null;
@@ -23,7 +23,6 @@ export function useLenis() {
       const href = anchor.getAttribute("href");
       if (!href) return;
 
-      // Handle both "/#section" and "#section" patterns
       let hash = "";
       if (href.startsWith("/#")) {
         hash = href.slice(1);
@@ -36,7 +35,7 @@ export function useLenis() {
       if (!el) return;
 
       e.preventDefault();
-      lenis.scrollTo(el as HTMLElement, { offset: -40, duration: 2.0 });
+      lenis.scrollTo(el as HTMLElement, { offset: -40, duration: 1.2 });
     }
     document.addEventListener("click", handleClick);
 

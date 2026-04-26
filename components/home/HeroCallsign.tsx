@@ -5,12 +5,17 @@ import { useEffect, useRef } from "react";
 export function HeroCallsign() {
   const topLineRef = useRef<HTMLSpanElement>(null);
   const botLineRef = useRef<HTMLSpanElement>(null);
+  const mouseXRef = useRef(0.5);
 
   useEffect(() => {
     function onMove(e: MouseEvent) {
-      // Use full viewport width so it reacts everywhere on screen
-      const nx = e.clientX / window.innerWidth;
-      // Map to a wide px range so the shift is visible and feels alive
+      mouseXRef.current = e.clientX / window.innerWidth;
+    }
+    document.addEventListener("mousemove", onMove);
+
+    let raf: number;
+    function loop() {
+      const nx = mouseXRef.current;
       const topOffset = (nx - 0.5) * 200;
       const botOffset = (nx - 0.5) * 140;
       if (topLineRef.current) {
@@ -19,9 +24,14 @@ export function HeroCallsign() {
       if (botLineRef.current) {
         botLineRef.current.style.backgroundPosition = `${botOffset}px 0`;
       }
+      raf = requestAnimationFrame(loop);
     }
-    document.addEventListener("mousemove", onMove);
-    return () => document.removeEventListener("mousemove", onMove);
+    raf = requestAnimationFrame(loop);
+
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   return (
@@ -37,7 +47,6 @@ export function HeroCallsign() {
             background:
               "repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 8px)",
             backgroundSize: "8px 1px",
-            transition: "background-position 0.35s cubic-bezier(0.2, 0.7, 0.2, 1)",
           }}
         />
         <span className="text-ink-2 text-[10.5px]">40.71°N · 74.00°W</span>
@@ -91,7 +100,6 @@ export function HeroCallsign() {
             background:
               "repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 8px)",
             backgroundSize: "8px 1px",
-            transition: "background-position 0.5s cubic-bezier(0.2, 0.7, 0.2, 1)",
           }}
         />
         <span className="text-ink-3 inline-flex items-center gap-2">
