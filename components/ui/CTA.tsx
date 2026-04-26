@@ -17,9 +17,9 @@ export function CTA({
 
   const variants = {
     default:
-      "bg-transparent text-ink border-ink hover:bg-ink hover:text-paper",
+      "bg-transparent text-ink border-ink hover:bg-ink hover:text-[#F3F0E8]",
     primary:
-      "bg-ink text-paper border-ink hover:bg-transparent hover:text-ink",
+      "bg-[#17171A] text-[#F3F0E8] border-[#17171A] hover:bg-transparent hover:text-ink hover:border-ink",
     ghost:
       "bg-transparent text-ink-2 border-rule-2 hover:text-ink hover:border-ink",
   };

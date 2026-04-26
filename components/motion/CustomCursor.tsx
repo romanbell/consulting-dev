@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
 export function CustomCursor() {
@@ -9,12 +9,30 @@ export function CustomCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
   const posRef = useRef({ x: 0, y: 0, cx: 0, cy: 0, rx: 0, ry: 0 });
+  const activeRef = useRef(false);
+
+  const handleMove = useCallback((e: MouseEvent) => {
+    posRef.current.x = e.clientX;
+    posRef.current.y = e.clientY;
+
+    // Update status bar cursor coords
+    const el = document.getElementById("sbCoords");
+    if (el) {
+      const x = String(Math.round(e.clientX)).padStart(3, "0");
+      const y = String(Math.round(e.clientY)).padStart(3, "0");
+      el.textContent = `[${x},${y}]`;
+    }
+
+    if (!activeRef.current) {
+      activeRef.current = true;
+      setActive(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (reduced) return;
 
     document.body.style.cursor = "none";
-    // Restore cursor on inputs/textareas
     const style = document.createElement("style");
     style.textContent = `
       input, textarea, select, button { cursor: auto !important; }
@@ -22,15 +40,10 @@ export function CustomCursor() {
     `;
     document.head.appendChild(style);
 
-    const onMove = (e: MouseEvent) => {
-      posRef.current.x = e.clientX;
-      posRef.current.y = e.clientY;
-      if (!active) setActive(true);
-    };
-    const onLeave = () => setActive(false);
-    const onEnter = () => setActive(true);
+    const onLeave = () => { activeRef.current = false; setActive(false); };
+    const onEnter = () => { activeRef.current = true; setActive(true); };
 
-    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mousemove", handleMove);
     document.addEventListener("mouseleave", onLeave);
     document.addEventListener("mouseenter", onEnter);
 
@@ -46,9 +59,7 @@ export function CustomCursor() {
         const dy = (me.clientY - cy) * 0.25;
         (el as HTMLElement).style.transform = `translate(${dx}px, ${dy}px)`;
       };
-      const leave = () => {
-        (el as HTMLElement).style.transform = "";
-      };
+      const leave = () => { (el as HTMLElement).style.transform = ""; };
       el.addEventListener("mousemove", move);
       el.addEventListener("mouseleave", leave);
       cleanups.push(() => {
@@ -60,12 +71,12 @@ export function CustomCursor() {
     let raf: number;
     function loop() {
       const p = posRef.current;
-      // Crosshair: tight follow (lerp 0.45)
+      // Crosshair: tight follow
       p.cx += (p.x - p.cx) * 0.45;
       p.cy += (p.y - p.cy) * 0.45;
-      // Ring: delayed follow (lerp 0.12)
-      p.rx += (p.x - p.rx) * 0.12;
-      p.ry += (p.y - p.ry) * 0.12;
+      // Ring: softer delayed follow
+      p.rx += (p.x - p.rx) * 0.1;
+      p.ry += (p.y - p.ry) * 0.1;
 
       if (crossRef.current) {
         crossRef.current.style.transform = `translate(${p.cx}px, ${p.cy}px) translate(-50%, -50%)`;
@@ -80,51 +91,49 @@ export function CustomCursor() {
     return () => {
       document.body.style.cursor = "";
       style.remove();
-      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseleave", onLeave);
       document.removeEventListener("mouseenter", onEnter);
       cleanups.forEach((fn) => fn());
       cancelAnimationFrame(raf);
     };
-  }, [reduced, active]);
+  }, [reduced, handleMove]);
 
   if (reduced) return null;
 
   return (
     <>
-      {/* Crosshair (+) — tight follow */}
+      {/* Crosshair (+) — slightly bigger, 23px */}
       <div
         ref={crossRef}
         className="fixed top-0 left-0 pointer-events-none z-[100]"
         style={{
-          width: "17px",
-          height: "17px",
+          width: "23px",
+          height: "23px",
           opacity: active ? 1 : 0,
           transition: "opacity 0.2s ease",
         }}
       >
-        {/* Horizontal line */}
         <span
           className="absolute top-1/2 left-0 right-0 -translate-y-1/2"
-          style={{ height: "1px", background: "var(--ink)", opacity: 0.7 }}
+          style={{ height: "1px", background: "var(--ink)", opacity: 0.6 }}
         />
-        {/* Vertical line */}
         <span
           className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
-          style={{ width: "1px", background: "var(--ink)", opacity: 0.7 }}
+          style={{ width: "1px", background: "var(--ink)", opacity: 0.6 }}
         />
       </div>
 
-      {/* Ring — delayed green hollow circle */}
+      {/* Ring — tiny, subtle green hollow circle */}
       <div
         ref={ringRef}
         className="fixed top-0 left-0 pointer-events-none z-[99]"
         style={{
-          width: "22px",
-          height: "22px",
+          width: "10px",
+          height: "10px",
           borderRadius: "50%",
-          border: "1.5px solid var(--accent)",
-          opacity: active ? 0.6 : 0,
+          border: "1px solid var(--accent)",
+          opacity: active ? 0.35 : 0,
           transition: "opacity 0.3s ease",
         }}
       />

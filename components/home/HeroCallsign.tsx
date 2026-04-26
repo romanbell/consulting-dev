@@ -5,21 +5,19 @@ import { useEffect, useRef } from "react";
 export function HeroCallsign() {
   const topLineRef = useRef<HTMLSpanElement>(null);
   const botLineRef = useRef<HTMLSpanElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onMove(e: MouseEvent) {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      // Normalized x position: 0 at left edge, 1 at right edge
-      const nx = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      // Shift the dashed line background-position based on cursor
-      const offset = nx * 120; // px shift range
+      // Use full viewport width so it reacts everywhere on screen
+      const nx = e.clientX / window.innerWidth;
+      // Map to a wide px range so the shift is visible and feels alive
+      const topOffset = (nx - 0.5) * 200;
+      const botOffset = (nx - 0.5) * 140;
       if (topLineRef.current) {
-        topLineRef.current.style.backgroundPosition = `${offset}px 0`;
+        topLineRef.current.style.backgroundPosition = `${topOffset}px 0`;
       }
       if (botLineRef.current) {
-        botLineRef.current.style.backgroundPosition = `${offset * 0.7}px 0`;
+        botLineRef.current.style.backgroundPosition = `${botOffset}px 0`;
       }
     }
     document.addEventListener("mousemove", onMove);
@@ -27,7 +25,7 @@ export function HeroCallsign() {
   }, []);
 
   return (
-    <div ref={containerRef} className="font-mono text-ink m-0 mb-2 max-w-[780px] relative" aria-hidden="true">
+    <div className="font-mono text-ink m-0 mb-2 max-w-[780px] relative" aria-hidden="true">
       {/* Head row */}
       <div className="grid items-center gap-3.5 py-1 grid-cols-[14px_auto_1fr_auto] text-[10px] tracking-[0.14em] uppercase text-ink-3 pb-2.5">
         <span className="text-ink font-mono text-[12px] leading-none">┗</span>
@@ -39,7 +37,7 @@ export function HeroCallsign() {
             background:
               "repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 8px)",
             backgroundSize: "8px 1px",
-            transition: "background-position 0.6s cubic-bezier(0.2, 0.7, 0.2, 1)",
+            transition: "background-position 0.35s cubic-bezier(0.2, 0.7, 0.2, 1)",
           }}
         />
         <span className="text-ink-2 text-[10.5px]">40.71°N · 74.00°W</span>
@@ -93,7 +91,7 @@ export function HeroCallsign() {
             background:
               "repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 8px)",
             backgroundSize: "8px 1px",
-            transition: "background-position 0.8s cubic-bezier(0.2, 0.7, 0.2, 1)",
+            transition: "background-position 0.5s cubic-bezier(0.2, 0.7, 0.2, 1)",
           }}
         />
         <span className="text-ink-3 inline-flex items-center gap-2">

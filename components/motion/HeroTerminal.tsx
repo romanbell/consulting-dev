@@ -89,43 +89,34 @@ export function HeroTerminal() {
   return (
     <div
       ref={termRef}
-      className="border border-rule-2 bg-[#1a1a1e] font-mono text-[10px] leading-[1.7] tracking-[0.01em] overflow-hidden relative rounded-sm"
+      className="border border-rule-2 bg-paper-2 font-mono text-[10px] leading-[1.7] tracking-[0.01em] overflow-hidden relative rounded-sm"
       style={{
-        padding: "6px 0",
+        padding: "8px 0",
         height: "168px",
         maskImage:
-          "linear-gradient(180deg, transparent 0, black 12px, black calc(100% - 12px), transparent 100%)",
+          "linear-gradient(180deg, transparent 0, black 8px, black calc(100% - 8px), transparent 100%)",
         WebkitMaskImage:
-          "linear-gradient(180deg, transparent 0, black 12px, black calc(100% - 12px), transparent 100%)",
+          "linear-gradient(180deg, transparent 0, black 8px, black calc(100% - 8px), transparent 100%)",
       }}
       aria-hidden="true"
     >
-      {/* Terminal header bar */}
-      <div className="flex items-center gap-1.5 px-3 pb-1.5 mb-1 border-b border-[#2a2a2e]">
-        <span className="w-[7px] h-[7px] rounded-full bg-[#ff5f57] opacity-70" />
-        <span className="w-[7px] h-[7px] rounded-full bg-[#febc2e] opacity-70" />
-        <span className="w-[7px] h-[7px] rounded-full bg-[#28c840] opacity-70" />
-        <span className="ml-2 text-[9px] text-[#666] tracking-[0.08em]">
-          veridium — studio.log
-        </span>
-      </div>
       {lines.map((line, i) => (
         <div
           key={`${line.ts}-${i}`}
-          className="flex gap-0 whitespace-nowrap px-3 py-px hover:bg-[#ffffff06]"
+          className="flex gap-0 whitespace-nowrap px-3 py-px"
         >
-          <span className="text-[#555] shrink-0 w-[62px]">{line.ts}</span>
+          <span className="text-ink-3 shrink-0 w-[62px]">{line.ts}</span>
           <span
             className={`shrink-0 w-[52px] ${LEVEL_COLORS[line.level]}`}
           >
             [{line.level}]
           </span>
-          <span className="text-[#b0b0b4] overflow-hidden text-ellipsis min-w-0">
+          <span className="text-ink overflow-hidden text-ellipsis min-w-0">
             {line.msg}
           </span>
           {i === lines.length - 1 && (
             <span
-              className="inline-block w-[5px] h-[10px] bg-[#b0b0b4] align-[-1px] ml-0.5"
+              className="inline-block w-[5px] h-[10px] bg-ink align-[-1px] ml-0.5"
               style={{ animation: "caret 1.05s steps(2) infinite" }}
             />
           )}
