@@ -47,29 +47,33 @@ function PatchbayGlyph({ active }: { active: boolean }) {
   );
 }
 
-/* 002 BUILD: Stacked building blocks that shift into alignment on hover.
-   Three columns of offset rectangles that lock into a grid. */
+/* 002 BUILD: Scattered blocks that lock into a tight grid on hover. */
 function SequencerGlyph({ active }: { active: boolean }) {
+  // Rest positions: spread apart with clear gaps
+  // Active positions: snapped into a tight 3-col layout
   const blocks = [
-    { x: 2,  y: active ? 2 : 4,   w: 14, h: 7 },
-    { x: 2,  y: active ? 11 : 14,  w: 14, h: 7 },
-    { x: 2,  y: active ? 20 : 22,  w: 14, h: 7 },
-    { x: 20, y: active ? 2 : 6,   w: 14, h: 11 },
-    { x: 20, y: active ? 16 : 20,  w: 14, h: 11 },
-    { x: 38, y: active ? 2 : 3,   w: 14, h: 7 },
-    { x: 38, y: active ? 11 : 12,  w: 14, h: 7 },
-    { x: 38, y: active ? 20 : 21,  w: 14, h: 7 },
-    { x: 56, y: active ? 2 : 8,   w: 14, h: 24 },
+    { rx: 0,  ry: 0,  ax: 2,  ay: 1,  w: 13, h: 6 },
+    { rx: 3,  ry: 12, ax: 2,  ay: 9,  w: 13, h: 6 },
+    { rx: 1,  ry: 23, ax: 2,  ay: 17, w: 13, h: 6 },
+    { rx: 22, ry: 3,  ax: 19, ay: 1,  w: 13, h: 10 },
+    { rx: 20, ry: 18, ax: 19, ay: 14, w: 13, h: 10 },
+    { rx: 40, ry: 1,  ax: 36, ay: 1,  w: 13, h: 6 },
+    { rx: 42, ry: 11, ax: 36, ay: 9,  w: 13, h: 6 },
+    { rx: 39, ry: 22, ax: 36, ay: 17, w: 13, h: 6 },
+    { rx: 57, ry: 5,  ax: 53, ay: 1,  w: 13, h: 22 },
   ];
   return (
     <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
       {blocks.map((b, i) => (
         <rect
           key={i}
-          x={b.x} y={b.y} width={b.w} height={b.h}
-          fill={active ? (i % 3 === 0 ? "var(--accent-ink)" : "none") : "none"}
+          x={active ? b.ax : b.rx}
+          y={active ? b.ay : b.ry}
+          width={b.w}
+          height={active ? b.h : b.h}
+          fill={active && i % 3 === 0 ? "var(--accent-ink)" : "none"}
           stroke={active ? "var(--accent-ink)" : "currentColor"}
-          opacity={active ? 1 : 0.5}
+          opacity={active ? 1 : 0.45}
           style={{
             transition: `all 0.35s cubic-bezier(0.2,0.7,0.2,1) ${i * 0.03}s`,
           }}
@@ -79,22 +83,22 @@ function SequencerGlyph({ active }: { active: boolean }) {
   );
 }
 
-/* 003 MEASURE: Rolling oscilloscope.
-   Two layered waveforms: one always scrolls (subtle), one highlights on hover. */
+/* 003 MEASURE: Static waveform at rest. On hover, it starts rolling and turns accent. */
 function LfoGlyph({ active }: { active: boolean }) {
   return (
     <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true" style={{ overflow: "hidden" }}>
       <line x1="0" y1="14" x2="72" y2="14" strokeDasharray="2 2" opacity=".3" />
-      {/* Base waveform: always rolling at low opacity */}
-      <g style={{ animation: "lfo-roll 2s linear infinite" }}>
-        <path
-          d="M-20 14 Q -10 3, 0 14 T 20 14 T 40 14 T 60 14 T 80 14 T 100 14 T 120 14"
-          fill="none" stroke="currentColor" strokeWidth="0.8"
-          opacity="0.25"
-        />
-      </g>
-      {/* Active waveform: faster, brighter, fades in/out */}
-      <g style={{ animation: "lfo-roll 1.2s linear infinite" }}>
+      {/* Static waveform: visible at rest */}
+      <path
+        d="M-6 14 Q 4 4, 14 14 T 34 14 T 54 14 T 74 14"
+        fill="none" stroke="currentColor" strokeWidth="1"
+        opacity={active ? 0 : 0.5}
+        style={{ transition: "opacity 0.4s ease" }}
+      />
+      {/* Rolling waveform: only visible on hover */}
+      <g style={{
+        animation: active ? "lfo-roll 1.4s linear infinite" : "none",
+      }}>
         <path
           d="M-20 14 Q -10 3, 0 14 T 20 14 T 40 14 T 60 14 T 80 14 T 100 14 T 120 14"
           fill="none"
@@ -108,31 +112,32 @@ function LfoGlyph({ active }: { active: boolean }) {
   );
 }
 
-/* 004 HAND-OFF: Rotary knob + arrow.
-   Knob always spins slowly. On hover, accent layer fades in. Arrow extends with transition. */
+/* 004 HAND-OFF: Static knob at rest. On hover, spins and turns accent. */
 function HandoffGlyph({ active }: { active: boolean }) {
   return (
     <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
-      {/* Base knob: always spinning slowly */}
-      <g style={{ transformOrigin: "14px 14px", animation: "rot 8s linear infinite" }}>
-        <circle cx="14" cy="14" r="9" opacity="0.4" />
-        <line x1="14" y1="14" x2="14" y2="6" opacity="0.4" />
-        <circle cx="14" cy="14" r="1.2" fill="currentColor" opacity="0.4" />
+      {/* Static knob: visible at rest */}
+      <g opacity={active ? 0 : 1} style={{ transition: "opacity 0.4s ease" }}>
+        <circle cx="14" cy="14" r="9" opacity="0.5" />
+        <line x1="14" y1="14" x2="14" y2="6" opacity="0.5" />
+        <circle cx="14" cy="14" r="1.2" fill="currentColor" opacity="0.5" />
         {[{ x: 5, y: 14 }, { x: 23, y: 14 }, { x: 14, y: 5 }, { x: 14, y: 23 }].map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="0.8" fill="currentColor" opacity="0.2" />
+          <circle key={i} cx={p.x} cy={p.y} r="0.8" fill="currentColor" opacity="0.3" />
         ))}
       </g>
-      {/* Accent knob: faster spin, fades in/out on hover */}
-      <g style={{ transformOrigin: "14px 14px", animation: "rot 2s linear infinite" }}>
+      {/* Spinning knob: only visible on hover */}
+      <g style={{
+        transformOrigin: "14px 14px",
+        animation: active ? "rot 2s linear infinite" : "none",
+      }}
+        opacity={active ? 1 : 0}
+      >
         <circle cx="14" cy="14" r="9" stroke="var(--accent-ink)"
-          opacity={active ? 1 : 0} style={{ transition: "opacity 0.4s ease" }} />
-        <line x1="14" y1="14" x2="14" y2="6" stroke="var(--accent-ink)" strokeWidth="1.5"
-          opacity={active ? 1 : 0} style={{ transition: "opacity 0.4s ease" }} />
-        <circle cx="14" cy="14" r="1.5" fill="var(--accent)"
-          opacity={active ? 1 : 0} style={{ transition: "opacity 0.4s ease" }} />
+          style={{ transition: "opacity 0.4s ease" }} />
+        <line x1="14" y1="14" x2="14" y2="6" stroke="var(--accent-ink)" strokeWidth="1.5" />
+        <circle cx="14" cy="14" r="1.5" fill="var(--accent)" />
         {[{ x: 5, y: 14 }, { x: 23, y: 14 }, { x: 14, y: 5 }, { x: 14, y: 23 }].map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="1" fill="var(--accent)"
-            opacity={active ? 0.7 : 0} style={{ transition: "opacity 0.4s ease" }} />
+          <circle key={i} cx={p.x} cy={p.y} r="1" fill="var(--accent)" opacity="0.7" />
         ))}
       </g>
       {/* Arrow */}
