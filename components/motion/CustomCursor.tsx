@@ -124,14 +124,13 @@ export function CustomCursor() {
         />
       </div>
 
-      {/* Ring — tiny, subtle green hollow circle */}
+      {/* Square — tiny, subtle green hollow square */}
       <div
         ref={ringRef}
         className="fixed top-0 left-0 pointer-events-none z-[99]"
         style={{
           width: "10px",
           height: "10px",
-          borderRadius: "50%",
           border: "1px solid var(--accent)",
           opacity: active ? 0.18 : 0,
           transition: "opacity 0.3s ease",

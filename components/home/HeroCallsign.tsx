@@ -5,19 +5,21 @@ import { useEffect, useRef } from "react";
 export function HeroCallsign() {
   const topLineRef = useRef<HTMLSpanElement>(null);
   const botLineRef = useRef<HTMLSpanElement>(null);
-  const mouseXRef = useRef(0.5);
+  const mouseRef = useRef({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
     function onMove(e: MouseEvent) {
-      mouseXRef.current = e.clientX / window.innerWidth;
+      mouseRef.current.x = e.clientX / window.innerWidth;
+      mouseRef.current.y = e.clientY / window.innerHeight;
     }
     document.addEventListener("mousemove", onMove);
 
     let raf: number;
     function loop() {
-      const nx = mouseXRef.current;
-      const topOffset = (nx - 0.5) * 200;
-      const botOffset = (nx - 0.5) * 140;
+      const { x: nx, y: ny } = mouseRef.current;
+      // Combine horizontal and vertical position into the offset
+      const topOffset = (nx - 0.5) * 200 + (ny - 0.5) * 80;
+      const botOffset = (nx - 0.5) * 140 + (ny - 0.5) * -60;
       if (topLineRef.current) {
         topLineRef.current.style.backgroundPosition = `${topOffset}px 0`;
       }

@@ -8,14 +8,13 @@ export function useLenis() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.0,
-      easing: (t: number) => 1 - Math.pow(1 - t, 3),
+      duration: 0.6,
+      easing: (t: number) => 1 - Math.pow(1 - t, 2),
       touchMultiplier: 2,
       smoothWheel: true,
     });
     lenisRef.current = lenis;
 
-    // Wire up anchor clicks to use Lenis scrollTo
     function handleClick(e: MouseEvent) {
       const target = e.target as HTMLElement;
       const anchor = target.closest("a[href]") as HTMLAnchorElement | null;
@@ -35,7 +34,7 @@ export function useLenis() {
       if (!el) return;
 
       e.preventDefault();
-      lenis.scrollTo(el as HTMLElement, { offset: -40, duration: 1.2 });
+      lenis.scrollTo(el as HTMLElement, { offset: -40, duration: 0.8 });
     }
     document.addEventListener("click", handleClick);
 

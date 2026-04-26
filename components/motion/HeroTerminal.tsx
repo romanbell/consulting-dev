@@ -128,12 +128,6 @@ export function HeroTerminal() {
             <span className="text-ink overflow-hidden text-ellipsis min-w-0">
               {line.msg}
             </span>
-            {i === lines.length - 1 && (
-              <span
-                className="inline-block w-[5px] h-[10px] bg-ink align-[-1px] ml-0.5"
-                style={{ animation: "caret 1.05s steps(2) infinite" }}
-              />
-            )}
           </div>
         );
       })}
