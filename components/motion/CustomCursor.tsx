@@ -15,7 +15,6 @@ export function CustomCursor() {
     posRef.current.x = e.clientX;
     posRef.current.y = e.clientY;
 
-    // Update status bar cursor coords
     const el = document.getElementById("sbCoords");
     if (el) {
       const x = String(Math.round(e.clientX)).padStart(3, "0");
@@ -32,11 +31,11 @@ export function CustomCursor() {
   useEffect(() => {
     if (reduced) return;
 
-    document.body.style.cursor = "none";
+    // Force cursor: none on everything, no exceptions
     const style = document.createElement("style");
     style.textContent = `
-      input, textarea, select, button { cursor: auto !important; }
-      @media (hover: none) { body { cursor: auto !important; } }
+      *, *::before, *::after { cursor: none !important; }
+      @media (hover: none) { *, *::before, *::after { cursor: auto !important; } }
     `;
     document.head.appendChild(style);
 
@@ -74,9 +73,9 @@ export function CustomCursor() {
       // Crosshair: tight follow
       p.cx += (p.x - p.cx) * 0.45;
       p.cy += (p.y - p.cy) * 0.45;
-      // Ring: softer delayed follow
-      p.rx += (p.x - p.rx) * 0.1;
-      p.ry += (p.y - p.ry) * 0.1;
+      // Square: close follow, just slightly behind
+      p.rx += (p.x - p.rx) * 0.35;
+      p.ry += (p.y - p.ry) * 0.35;
 
       if (crossRef.current) {
         crossRef.current.style.transform = `translate(${p.cx}px, ${p.cy}px) translate(-50%, -50%)`;
@@ -89,7 +88,6 @@ export function CustomCursor() {
     raf = requestAnimationFrame(loop);
 
     return () => {
-      document.body.style.cursor = "";
       style.remove();
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseleave", onLeave);
@@ -103,7 +101,7 @@ export function CustomCursor() {
 
   return (
     <>
-      {/* Crosshair (+) — slightly bigger, 23px */}
+      {/* Crosshair (+) */}
       <div
         ref={crossRef}
         className="fixed top-0 left-0 pointer-events-none z-[100]"
@@ -124,7 +122,7 @@ export function CustomCursor() {
         />
       </div>
 
-      {/* Square — tiny, subtle green hollow square */}
+      {/* Trailing square */}
       <div
         ref={ringRef}
         className="fixed top-0 left-0 pointer-events-none z-[99]"
@@ -132,7 +130,7 @@ export function CustomCursor() {
           width: "10px",
           height: "10px",
           border: "1px solid var(--accent)",
-          opacity: active ? 0.18 : 0,
+          opacity: active ? 0.12 : 0,
           transition: "opacity 0.3s ease",
         }}
       />
