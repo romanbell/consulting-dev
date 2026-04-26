@@ -3,30 +3,37 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
-const MESSAGES: [string, string][] = [
-  ["\u2014", "kettle on. proceed."],
-  ["\u2014", "stared at the monitor for <b>4</b> minutes"],
-  ["\u2014", "mech keyboard click count: <b>1,204</b>"],
-  ["\u2014", "that's a lot of tabs"],
-  ["\u2014", "cron muttered something. ignored."],
-  ["\u2014", "JW reorganised the snack drawer"],
-  ["\u2014", "RB renamed the project for the <b>3rd</b> time"],
-  ["\u2014", "brewed coffee · <b>cup 04</b>"],
-  ["\u2014", "argued about font weights for <b>22m</b>"],
-  ["\u2014", "saved a draft. did not press send."],
-  ["\u2014", "whiteboard at <b>78%</b> capacity"],
-  ["\u2014", "squirrel noted at <b>10:42</b>"],
-  ["\u2014", "named a function after a fish"],
-  ["\u2014", "stretched. made a face."],
-  ["\u2014", "plant watered. plant judged us."],
-  ["\u2014", "took the long route to the bodega"],
-  ["\u2014", "drew a duck on the schema diagram"],
-  ["\u2014", "silence held for <b>9</b> seconds"],
-  ["\u2014", "reorganised the bookmarks bar. again."],
-  ["\u2014", "one (1) good idea, written down"],
+type LogLevel = "INFO" | "OK" | "WARN" | "DEBUG";
+
+interface LogEntry {
+  level: LogLevel;
+  msg: string;
+}
+
+const LOG_ENTRIES: LogEntry[] = [
+  { level: "INFO", msg: "GET /api/v1/health 200 OK 12ms" },
+  { level: "OK", msg: "pipeline.ingest completed — 1,204 records" },
+  { level: "INFO", msg: "POST /api/v1/embed 200 OK 342ms" },
+  { level: "DEBUG", msg: "cache hit ratio: 0.94 (warm)" },
+  { level: "INFO", msg: "GET /api/v1/projects 200 OK 8ms" },
+  { level: "OK", msg: "dbt run finished — 14 models, 0 failures" },
+  { level: "WARN", msg: "latency p99 > 400ms on /search — monitoring" },
+  { level: "INFO", msg: "PUT /api/v1/config 200 OK 22ms" },
+  { level: "OK", msg: "deploy.preview ready — branch motion-v2" },
+  { level: "INFO", msg: "GET /api/v1/metrics 200 OK 6ms" },
+  { level: "DEBUG", msg: "vector index: 1.4M embeddings, 98.2% recall" },
+  { level: "INFO", msg: "POST /api/v1/transform 200 OK 189ms" },
+  { level: "OK", msg: "snapshot saved — warehouse.prod.2026-04-25" },
+  { level: "WARN", msg: "retry queue depth: 3 — clearing" },
+  { level: "INFO", msg: "GET /api/v1/status 200 OK 4ms" },
+  { level: "OK", msg: "cron.daily completed — next run 06:00 UTC" },
+  { level: "DEBUG", msg: "model.inference avg 248ms (batch=32)" },
+  { level: "INFO", msg: "PATCH /api/v1/schema 200 OK 31ms" },
+  { level: "OK", msg: "tests passed — 47/47 green" },
+  { level: "INFO", msg: "GET /api/v1/audit 200 OK 15ms" },
 ];
 
-const MAX_LINES = 7;
+const MAX_LINES = 8;
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -37,39 +44,44 @@ function timestamp() {
   return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-/** SSR-safe: renders static seed lines. Hydration replaces with animated stream. */
+const LEVEL_COLORS: Record<LogLevel, string> = {
+  INFO: "text-ink-3",
+  OK: "text-accent-ink",
+  WARN: "text-[#b8860b]",
+  DEBUG: "text-ink-3 opacity-60",
+};
+
 export function HeroTerminal() {
   const reduced = useReducedMotion();
   const termRef = useRef<HTMLDivElement>(null);
-  const [lines, setLines] = useState<{ ts: string; lvl: string; msg: string }[]>(() => {
-    // Seed initial lines for SSR
-    const seed: { ts: string; lvl: string; msg: string }[] = [];
-    for (let i = 0; i < 4; i++) {
-      const [lvl, msg] = MESSAGES[i] ?? ["\u2014", ""];
-      seed.push({ ts: "00:00:00", lvl, msg });
+  const [lines, setLines] = useState<
+    { ts: string; level: LogLevel; msg: string }[]
+  >(() => {
+    const seed: { ts: string; level: LogLevel; msg: string }[] = [];
+    for (let i = 0; i < 5; i++) {
+      const entry = LOG_ENTRIES[i];
+      if (entry) seed.push({ ts: "00:00:00", level: entry.level, msg: entry.msg });
     }
     return seed;
   });
-  const indexRef = useRef(4);
+  const indexRef = useRef(5);
 
   useEffect(() => {
     if (reduced) return;
 
-    // Update seed lines with real timestamps
-    setLines((prev) =>
-      prev.map((line) => ({ ...line, ts: timestamp() }))
-    );
+    setLines((prev) => prev.map((line) => ({ ...line, ts: timestamp() })));
 
     const interval = setInterval(() => {
-      const i = indexRef.current % MESSAGES.length;
-      const [lvl, msg] = MESSAGES[i] ?? ["\u2014", ""];
+      const i = indexRef.current % LOG_ENTRIES.length;
+      const entry = LOG_ENTRIES[i];
+      if (!entry) return;
       indexRef.current++;
       setLines((prev) => {
-        const next = [...prev, { ts: timestamp(), lvl, msg }];
+        const next = [...prev, { ts: timestamp(), level: entry.level, msg: entry.msg }];
         if (next.length > MAX_LINES) return next.slice(-MAX_LINES);
         return next;
       });
-    }, 2200);
+    }, 1800);
 
     return () => clearInterval(interval);
   }, [reduced]);
@@ -77,30 +89,46 @@ export function HeroTerminal() {
   return (
     <div
       ref={termRef}
-      className="mt-3.5 border border-rule-2 bg-paper-2 font-mono text-[10.5px] leading-[1.55] text-ink-2 tracking-[0.02em] h-[142px] overflow-hidden relative"
+      className="border border-rule-2 bg-[#1a1a1e] font-mono text-[10px] leading-[1.7] tracking-[0.01em] overflow-hidden relative rounded-sm"
       style={{
-        padding: "10px 12px 12px",
+        padding: "6px 0",
+        height: "168px",
         maskImage:
-          "linear-gradient(180deg, transparent 0, black 18px, black calc(100% - 18px), transparent 100%)",
+          "linear-gradient(180deg, transparent 0, black 12px, black calc(100% - 12px), transparent 100%)",
         WebkitMaskImage:
-          "linear-gradient(180deg, transparent 0, black 18px, black calc(100% - 18px), transparent 100%)",
+          "linear-gradient(180deg, transparent 0, black 12px, black calc(100% - 12px), transparent 100%)",
       }}
       aria-hidden="true"
     >
+      {/* Terminal header bar */}
+      <div className="flex items-center gap-1.5 px-3 pb-1.5 mb-1 border-b border-[#2a2a2e]">
+        <span className="w-[7px] h-[7px] rounded-full bg-[#ff5f57] opacity-70" />
+        <span className="w-[7px] h-[7px] rounded-full bg-[#febc2e] opacity-70" />
+        <span className="w-[7px] h-[7px] rounded-full bg-[#28c840] opacity-70" />
+        <span className="ml-2 text-[9px] text-[#666] tracking-[0.08em]">
+          veridium — studio.log
+        </span>
+      </div>
       {lines.map((line, i) => (
-        <div key={`${line.ts}-${i}`} className="flex gap-2 whitespace-nowrap">
-          <span className="text-ink-3 shrink-0">{line.ts}</span>
-          <span className="text-ink-3 shrink-0 w-8">{line.lvl}</span>
+        <div
+          key={`${line.ts}-${i}`}
+          className="flex gap-0 whitespace-nowrap px-3 py-px hover:bg-[#ffffff06]"
+        >
+          <span className="text-[#555] shrink-0 w-[62px]">{line.ts}</span>
           <span
-            className="text-ink overflow-hidden text-ellipsis min-w-0"
-            dangerouslySetInnerHTML={{
-              __html:
-                line.msg +
-                (i === lines.length - 1
-                  ? '<span class="inline-block w-[5px] h-[9px] bg-ink align-[-1px] ml-0.5" style="animation: caret 1.05s steps(2) infinite"></span>'
-                  : ""),
-            }}
-          />
+            className={`shrink-0 w-[52px] ${LEVEL_COLORS[line.level]}`}
+          >
+            [{line.level}]
+          </span>
+          <span className="text-[#b0b0b4] overflow-hidden text-ellipsis min-w-0">
+            {line.msg}
+          </span>
+          {i === lines.length - 1 && (
+            <span
+              className="inline-block w-[5px] h-[10px] bg-[#b0b0b4] align-[-1px] ml-0.5"
+              style={{ animation: "caret 1.05s steps(2) infinite" }}
+            />
+          )}
         </div>
       ))}
     </div>
