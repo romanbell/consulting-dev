@@ -16,21 +16,11 @@ export function ToolchainMarquee() {
 
   function chipStyle(cat: string) {
     const isMatch = filter === "all" || filter === cat;
-    const isAi = cat === "ai";
     return {
       transitionTimingFunction: "var(--ease-studio)",
-      borderColor: isAi && isMatch ? "var(--accent-ink)" : isMatch ? undefined : "var(--rule-2)",
-      color: isAi && isMatch ? "var(--accent-ink)" : isMatch ? undefined : undefined,
-      opacity: isMatch ? 1 : 0.2,
+      opacity: isMatch ? 1 : 0.15,
       cursor: "default" as const,
     };
-  }
-
-  function dotBg(cat: string) {
-    const isMatch = filter === "all" || filter === cat;
-    if (cat === "ai" && isMatch) return "var(--accent)";
-    if (isMatch) return "var(--ink-3)";
-    return "var(--rule-2)";
   }
 
   return (
@@ -65,7 +55,7 @@ export function ToolchainMarquee() {
             >
               <span
                 className="w-[5px] h-[5px] rounded-full inline-block"
-                style={{ background: dotBg(tool.category) }}
+                style={{ background: "var(--ink-3)" }}
                 aria-hidden="true"
               />
               {tool.name}
@@ -96,7 +86,7 @@ export function ToolchainMarquee() {
               >
                 <span
                   className="w-[5px] h-[5px] rounded-full inline-block transition-all duration-200"
-                  style={{ background: dotBg(tool.category) }}
+                  style={{ background: "var(--ink-3)" }}
                   aria-hidden="true"
                 />
                 {tool.name}
