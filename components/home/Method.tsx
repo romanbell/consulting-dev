@@ -7,19 +7,27 @@ import { METHOD_STEPS } from "@/lib/content/method";
 function PatchbayGlyph({ active }: { active: boolean }) {
   return (
     <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
-      {/* Patch points */}
-      <circle cx="8" cy="14" r="3.5" style={{ transition: "r 0.3s ease", ...(active ? { r: 4.5 } as React.CSSProperties : {}) }} />
-      <circle cx="26" cy="14" r="3.5" />
-      <circle cx="44" cy="14" r="3.5" style={{ transition: "r 0.3s ease", ...(active ? { r: 4.5 } as React.CSSProperties : {}) }} />
-      {/* Patch cables */}
-      <path d="M11.5 14 C 17 5, 22 5, 26 14" fill="none" style={{ transition: "d 0.4s ease", stroke: active ? "var(--accent-ink)" : "currentColor" }} />
-      <path d="M29.5 14 C 35 23, 40 23, 44 14" fill="none" style={{ transition: "d 0.4s ease", stroke: active ? "var(--accent-ink)" : "currentColor" }} />
+      {/* Patch jacks */}
+      <circle cx="8" cy="14" r="3" />
+      <circle cx="26" cy="14" r="3" />
+      <circle cx="44" cy="14" r="3" />
+      {/* Cable 1: undulates on hover */}
+      <path
+        d="M11.5 14 C 17 5, 22 5, 26 14"
+        fill="none"
+        stroke={active ? "var(--accent-ink)" : "currentColor"}
+        style={{ animation: active ? "cable-wave 1.6s ease-in-out infinite" : "none" }}
+      />
+      {/* Cable 2: undulates opposite phase */}
+      <path
+        d="M29.5 14 C 35 23, 40 23, 44 14"
+        fill="none"
+        stroke={active ? "var(--accent-ink)" : "currentColor"}
+        style={{ animation: active ? "cable-wave-2 1.6s ease-in-out infinite" : "none" }}
+      />
       {/* Signal LED */}
-      <circle cx="58" cy="14" r="2.5" fill={active ? "var(--accent)" : "currentColor"} stroke="none"
-        style={{ animation: active ? "blinkSig 0.6s ease-in-out infinite" : "blinkSig 1.4s ease-in-out infinite" }} />
-      {/* Second LED appears on hover */}
-      <circle cx="66" cy="14" r="1.5" fill="var(--accent)" stroke="none"
-        style={{ opacity: active ? 1 : 0, transition: "opacity 0.3s ease", animation: active ? "blinkSig 0.8s ease-in-out infinite 0.3s" : "none" }} />
+      <circle cx="56" cy="14" r="2" fill={active ? "var(--accent)" : "currentColor"} stroke="none"
+        style={{ animation: "blinkSig 1.4s ease-in-out infinite" }} />
     </svg>
   );
 }
@@ -50,27 +58,24 @@ function SequencerGlyph({ active }: { active: boolean }) {
 }
 
 function LfoGlyph({ active }: { active: boolean }) {
+  // Rolling oscilloscope: a wide waveform that scrolls left continuously
+  // The SVG clips to the visible area while the path translates
   return (
-    <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
+    <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true" style={{ overflow: "hidden" }}>
       {/* Center line */}
       <line x1="0" y1="14" x2="72" y2="14" strokeDasharray="2 2" opacity=".3" />
-      {/* Waveform */}
-      <path
-        d={active
-          ? "M-8 14 Q 2 0, 12 14 T 32 14 T 52 14 T 72 14 T 92 14"
-          : "M-8 14 Q 4 6, 14 14 T 34 14 T 54 14 T 74 14"
-        }
-        fill="none"
-        stroke={active ? "var(--accent-ink)" : "currentColor"}
-        strokeWidth={active ? "1.5" : "1"}
-        style={{
-          transition: "d 0.5s cubic-bezier(0.2,0.7,0.2,1), stroke 0.2s ease, stroke-width 0.2s ease",
-          animation: active ? "lfo 1.2s ease-in-out infinite" : "none",
-        }}
-      />
-      {/* Rate indicator dot */}
-      <circle cx={active ? "60" : "60"} cy="14" r="2" fill="var(--accent)" opacity={active ? 1 : 0}
-        style={{ transition: "opacity 0.3s ease", animation: active ? "blinkSig 0.5s ease-in-out infinite" : "none" }} />
+      {/* Waveform group: wider than viewport, scrolls left on hover */}
+      <g style={{
+        animation: active ? "lfo-roll 1.4s linear infinite" : "none",
+        transition: "stroke 0.2s ease",
+      }}>
+        <path
+          d="M-20 14 Q -10 3, 0 14 T 20 14 T 40 14 T 60 14 T 80 14 T 100 14 T 120 14"
+          fill="none"
+          stroke={active ? "var(--accent-ink)" : "currentColor"}
+          strokeWidth={active ? "1.5" : "1"}
+        />
+      </g>
     </svg>
   );
 }

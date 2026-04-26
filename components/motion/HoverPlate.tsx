@@ -8,49 +8,52 @@ interface PlateData {
   outcome: string;
 }
 
-/** Generate a 5x5 mirrored pixel hash (GitHub identicon style) from a seed string */
-function generateIdenticon(seed: string): boolean[][] {
+/** Generate a mirrored pixel hash (GitHub identicon style) from a seed string.
+ *  cols = total columns (must be odd for symmetry). rows = total rows. */
+function generateIdenticon(seed: string, cols: number, rows: number): boolean[][] {
   let h = 0;
   for (const c of seed) h = (h * 31 + c.charCodeAt(0)) & 0x7fffffff;
 
+  const half = Math.ceil(cols / 2);
   const grid: boolean[][] = [];
-  for (let row = 0; row < 5; row++) {
+  for (let row = 0; row < rows; row++) {
     const line: boolean[] = [];
-    for (let col = 0; col < 3; col++) {
+    for (let col = 0; col < half; col++) {
       h = (h * 1103515245 + 12345) & 0x7fffffff;
-      line.push((h & 1) === 1);
+      line.push((h % 3) !== 0); // ~66% fill for denser pattern
     }
-    // Mirror: col 3 = col 1, col 4 = col 0
-    line.push(line[1] ?? false);
-    line.push(line[0] ?? false);
-    grid.push(line);
+    // Mirror
+    const full = [...line];
+    for (let col = half - 2; col >= 0; col--) {
+      full.push(line[col] ?? false);
+    }
+    grid.push(full);
   }
   return grid;
 }
 
 function IdenticonCanvas({ seed }: { seed: string }) {
-  const grid = generateIdenticon(seed);
-  const cellSize = 18;
-  const gap = 2;
-  const total = cellSize * 5 + gap * 4;
+  const cols = 13;
+  const rows = 7;
+  const grid = generateIdenticon(seed, cols, rows);
 
   return (
     <svg
-      width={total}
-      height={total}
-      viewBox={`0 0 ${total} ${total}`}
-      style={{ position: "relative", zIndex: 1 }}
+      viewBox={`0 0 ${cols} ${rows}`}
+      preserveAspectRatio="none"
+      className="absolute inset-0 w-full h-full"
+      style={{ zIndex: 1 }}
     >
       {grid.map((row, ry) =>
         row.map((on, cx) => (
           <rect
             key={`${ry}-${cx}`}
-            x={cx * (cellSize + gap)}
-            y={ry * (cellSize + gap)}
-            width={cellSize}
-            height={cellSize}
+            x={cx}
+            y={ry}
+            width="1"
+            height="1"
             fill={on ? "var(--accent)" : "transparent"}
-            opacity={on ? 0.7 : 0}
+            opacity={on ? 0.45 : 0}
           />
         ))
       )}

@@ -156,6 +156,39 @@ a:hover:not(.cta-btn) {
   }
 }
 
+@keyframes lfo-roll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-40px);
+  }
+}
+
+@keyframes cable-wave {
+  0% {
+    d: path("M11.5 14 C 17 5, 22 5, 26 14");
+  }
+  50% {
+    d: path("M11.5 14 C 17 23, 22 23, 26 14");
+  }
+  100% {
+    d: path("M11.5 14 C 17 5, 22 5, 26 14");
+  }
+}
+
+@keyframes cable-wave-2 {
+  0% {
+    d: path("M29.5 14 C 35 23, 40 23, 44 14");
+  }
+  50% {
+    d: path("M29.5 14 C 35 5, 40 5, 44 14");
+  }
+  100% {
+    d: path("M29.5 14 C 35 23, 40 23, 44 14");
+  }
+}
+
 @keyframes marquee-l {
   0% {
     transform: translateX(0);
