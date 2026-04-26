@@ -104,6 +104,7 @@ export function HeroTerminal() {
         <div
           key={`${line.ts}-${i}`}
           className="flex gap-0 whitespace-nowrap px-3 py-px"
+          style={{ animation: "ht-in 0.45s ease forwards" }}
         >
           <span className="text-ink-3 shrink-0 w-[62px]">{line.ts}</span>
           <span

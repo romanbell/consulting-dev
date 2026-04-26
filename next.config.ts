@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  distDir: ".next-build",
+  distDir: ".next-output",
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],

@@ -31,3 +31,4 @@ next-env.d.ts
 /.vscode
 /.idea
 /.next-build/
+/.next-output/

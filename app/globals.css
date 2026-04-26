@@ -112,9 +112,10 @@ a {
   text-decoration: none;
 }
 
-a:hover {
+a:hover:not(.cta-btn) {
   color: var(--accent-ink);
 }
+
 
 /* ============ SKIP LINK ============ */
 .skip-link {
@@ -144,6 +145,17 @@ a:hover {
 }
 
 /* ============ ANIMATIONS ============ */
+@keyframes ht-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes marquee-l {
   0% {
     transform: translateX(0);

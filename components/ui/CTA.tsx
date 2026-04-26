@@ -13,16 +13,7 @@ export function CTA({
   className?: string;
 }) {
   const base =
-    "inline-flex items-center gap-2 py-2 px-4 font-mono text-[11px] tracking-[0.03em] border rounded-full relative no-underline transition-all duration-200";
-
-  const variants = {
-    default:
-      "bg-transparent text-ink border-ink hover:bg-ink hover:text-[#F3F0E8]",
-    primary:
-      "bg-[#17171A] text-[#F3F0E8] border-[#17171A] hover:bg-transparent hover:text-ink hover:border-ink",
-    ghost:
-      "bg-transparent text-ink-2 border-rule-2 hover:text-ink hover:border-ink",
-  };
+    "inline-flex items-center gap-2 py-2 px-4 font-mono text-[11px] tracking-[0.03em] rounded-full relative no-underline transition-all duration-200 cta-btn";
 
   const isExternal = href.startsWith("http") || href.startsWith("mailto:");
 
@@ -38,11 +29,33 @@ export function CTA({
     </>
   );
 
+  // Use inline styles for colors to beat the global a:hover rule
+  const variantStyles: Record<string, React.CSSProperties> = {
+    default: {
+      background: "transparent",
+      color: "#17171A",
+      border: "1px solid #17171A",
+    },
+    primary: {
+      background: "#17171A",
+      color: "#F3F0E8",
+      border: "1px solid #17171A",
+    },
+    ghost: {
+      background: "transparent",
+      color: "#45454A",
+      border: "1px solid var(--rule-2)",
+    },
+  };
+
+  const style = variantStyles[variant] ?? variantStyles.default;
+
   if (isExternal) {
     return (
       <a
         href={href}
-        className={cn(base, variants[variant], className)}
+        className={cn(base, className)}
+        style={style}
         target="_blank"
         rel="noopener noreferrer"
         data-magnetic
@@ -55,7 +68,8 @@ export function CTA({
   return (
     <Link
       href={href}
-      className={cn(base, variants[variant], className)}
+      className={cn(base, className)}
+      style={style}
       data-magnetic
     >
       {inner}
