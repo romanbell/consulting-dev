@@ -29,7 +29,7 @@ export function ToolchainMarquee() {
   return (
     <>
       {/* Filter buttons */}
-      <div className="flex gap-1.5 flex-wrap pb-5" style={{ paddingLeft: 188 }}>
+      <div className="flex gap-1.5 flex-wrap pb-5 pl-[188px] max-[768px]:pl-0">
         {TOOL_FILTERS.map((f) => (
           <button
             key={f.key}
@@ -49,7 +49,7 @@ export function ToolchainMarquee() {
       </div>
 
       {reduced ? (
-        <div className="flex flex-wrap gap-1.5" style={{ paddingLeft: 188 }}>
+        <div className="flex flex-wrap gap-1.5 pl-[188px] max-[768px]:pl-0">
           {TOOLS.map((tool) => (
             <span
               key={tool.name}

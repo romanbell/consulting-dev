@@ -7,6 +7,7 @@ import { StatusBar } from "@/components/layout/StatusBar";
 import { IndexFAB } from "@/components/motion/IndexFAB";
 import { HoverPlate } from "@/components/motion/HoverPlate";
 import { CustomCursor } from "@/components/motion/CustomCursor";
+import { MobileBottomCTA } from "@/components/layout/MobileBottomCTA";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -92,6 +93,7 @@ export default function RootLayout({
         <IndexFAB />
         <HoverPlate />
         <CustomCursor />
+        <MobileBottomCTA />
         {/* Analytics placeholder: drop Plausible or PostHog script here */}
       </body>
     </html>

@@ -17,27 +17,27 @@ export default function MethodPage() {
   return (
     <Shell>
       <Nav />
-      <main id="main" className="py-20">
+      <main id="main" className="py-20 max-[768px]:py-10">
         <Micro variant="accent" className="block mb-4">
           § 03 — Method
         </Micro>
-        <Headline level={1} className="mb-6 max-w-[22ch]">
+        <Headline level={1} className="mb-6 max-w-[22ch] max-[768px]:text-[28px] max-[768px]:max-w-none">
           Four movements, from{" "}
           <span className="text-accent-ink">question</span> to system.
         </Headline>
-        <p className="text-ink-2 text-[15px] max-w-[52ch] mb-16">
+        <p className="text-ink-2 text-[15px] max-[768px]:text-[16px] max-w-[52ch] mb-16 max-[768px]:mb-10">
           Every project follows the same arc. The steps are consistent because
           the discipline is the point. What changes is the problem.
         </p>
 
-        <div className="flex flex-col gap-0">
+        {/* Desktop: 3-column layout with glyph sidebar */}
+        <div className="hidden min-[769px]:flex flex-col gap-0">
           {METHOD_STEPS.map((step, i) => {
             const Glyph = GLYPH_MAP[step.glyphId];
             return (
               <div
                 key={step.n}
-                className="grid gap-12 py-16 border-t border-rule"
-                style={{ gridTemplateColumns: "80px 1fr 320px" }}
+                className="grid grid-cols-[80px_1fr_320px] gap-12 py-16 border-t border-rule"
               >
                 <div className="flex flex-col items-center gap-4">
                   <div className="font-mono text-[10px] text-ink-3 tracking-[0.12em]">
@@ -64,6 +64,26 @@ export default function MethodPage() {
               </div>
             );
           })}
+        </div>
+
+        {/* Mobile: compact vertical stack */}
+        <div className="min-[769px]:hidden flex flex-col gap-0">
+          {METHOD_STEPS.map((step) => (
+            <div
+              key={step.n}
+              className="py-5 border-t border-rule"
+            >
+              <Micro variant="accent" className="block mb-2">
+                {step.code}
+              </Micro>
+              <h2 className="font-sans font-medium text-[20px] tracking-[-0.01em] m-0 mb-3">
+                {step.title}
+              </h2>
+              <p className="text-[16px] leading-[1.55] text-ink-2 m-0">
+                {step.body}
+              </p>
+            </div>
+          ))}
         </div>
       </main>
       <Footer />

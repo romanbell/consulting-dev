@@ -7,7 +7,12 @@ import {
 
 export function Toolchain() {
   return (
-    <>
+    /* Entire toolchain section is desktop-only.
+       On mobile, the marquee and engagement blueprint are cut.
+       The reasoning: the tool marquee is desktop theater (82 scrolling pills),
+       and the engagement blueprint is deep-dive reference material. Neither
+       earns its place on a 6" screen. */
+    <div className="max-[768px]:hidden">
       {/* Marquee */}
       <section
         className="border-t border-rule"
@@ -120,7 +125,6 @@ export function Toolchain() {
                 </span>
               </div>
             ))}
-            {/* Progress arrow */}
             <div
               className="absolute top-1/2 -right-5 -translate-y-1/2 font-mono text-[10px] text-ink-3"
               aria-hidden="true"
@@ -162,7 +166,6 @@ export function Toolchain() {
               </div>
             ))}
 
-            {/* Strengths block in the 6th grid cell */}
             <div>
               <div className="flex items-center gap-2.5 mb-3">
                 <span className="font-mono text-[10px] tracking-[0.14em] uppercase bg-accent-ink text-paper px-2 py-1">
@@ -194,6 +197,6 @@ export function Toolchain() {
 
         </div>
       </section>
-    </>
+    </div>
   );
 }

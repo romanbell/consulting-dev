@@ -54,7 +54,7 @@ export function IndexFAB() {
     <>
       <button
         onClick={toggle}
-        className="fixed right-6 bottom-6 z-20 bg-ink text-paper font-mono text-[11px] tracking-[0.14em] uppercase py-[11px] px-4 cursor-pointer border-none rounded-full flex gap-2.5 items-center transition-transform duration-250 hover:-translate-y-0.5"
+        className="max-[768px]:hidden fixed right-6 bottom-6 z-20 bg-ink text-paper font-mono text-[11px] tracking-[0.14em] uppercase py-[11px] px-4 cursor-pointer border-none rounded-full flex gap-2.5 items-center transition-transform duration-250 hover:-translate-y-0.5"
         style={{ transitionTimingFunction: "var(--ease-studio)" }}
         aria-label="Open index panel"
       >
@@ -65,7 +65,7 @@ export function IndexFAB() {
       </button>
 
       <div
-        className="fixed right-6 bottom-[72px] w-[300px] bg-paper border border-ink z-21 p-4.5 transition-all duration-220"
+        className="max-[768px]:hidden fixed right-6 bottom-[72px] w-[300px] bg-paper border border-ink z-21 p-4.5 transition-all duration-220"
         style={{
           transitionTimingFunction: "var(--ease-studio)",
           opacity: open ? 1 : 0,

@@ -290,3 +290,27 @@ a:hover:not(.cta-btn) {
     --shell-px: 28px;
   }
 }
+
+@media (max-width: 768px) {
+  :root {
+    --shell-px: 20px;
+  }
+
+  body {
+    font-size: 16px;
+    line-height: 1.5;
+    /* Bottom CTA bar clearance */
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Disable grain texture on mobile (perf) */
+  body::before {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --shell-px: 16px;
+  }
+}

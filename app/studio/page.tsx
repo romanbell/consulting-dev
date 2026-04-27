@@ -17,15 +17,16 @@ export default function StudioPage() {
   return (
     <Shell>
       <Nav />
-      <main id="main" className="py-20">
+      <main id="main" className="py-20 max-[768px]:py-10">
         <Micro variant="accent" className="block mb-4">
           § 02 — Studio
         </Micro>
-        <Headline level={1} className="mb-8 max-w-[18ch]">
+        <Headline level={1} className="mb-8 max-w-[18ch] max-[768px]:text-[28px] max-[768px]:max-w-none">
           Two people, one studio, the full stack.
         </Headline>
 
-        <div className="grid gap-16 max-w-[960px]" style={{ gridTemplateColumns: "1fr 320px" }}>
+        {/* Desktop: two-column layout */}
+        <div className="hidden min-[769px]:grid grid-cols-[1fr_320px] gap-16 max-w-[960px]">
           <div>
             <p className="font-sans font-normal text-[22px] leading-[1.3] text-ink m-0 mb-8 max-w-[30ch] border-l-2 border-ink pl-5 tracking-[-0.015em]">
               Projects deserve more from their data. We treat each engagement as
@@ -106,6 +107,58 @@ export default function StudioPage() {
               ))}
             </div>
           </aside>
+        </div>
+
+        {/* Mobile: single column, condensed */}
+        <div className="min-[769px]:hidden">
+          <p
+            className="font-sans font-normal text-[20px] leading-[1.35] text-ink m-0 mb-6 border-l-2 border-ink pl-4 tracking-[-0.01em]"
+          >
+            Projects deserve more from their data. We treat each engagement as
+            an artifact: researched, built, and left better than we found it.
+          </p>
+          <p className="m-0 mb-4 text-[16px] leading-[1.55] text-ink">
+            A two-person studio where strategy meets engineering. Founded by
+            Jeffrey Wang and Roman Bellisari in 2024. We embed with teams who
+            know their business and need a partner who can work across schema,
+            pipeline, and P&amp;L.
+          </p>
+
+          <div className="mt-10">
+            <Micro variant="ink" className="block mb-4">
+              Partners
+            </Micro>
+            {PARTNERS.map((p) => (
+              <div key={p.n} className="flex items-baseline gap-3 py-3 border-b border-dashed border-rule-2 last:border-b-0">
+                <span className="font-mono text-[10px] text-ink-3 tracking-[0.08em] w-5 shrink-0">
+                  {p.n}
+                </span>
+                <div>
+                  <div className="font-sans text-[16px] text-ink">{p.name}</div>
+                  <div className="font-mono text-[10px] text-ink-3 tracking-[0.06em] mt-0.5">
+                    {p.role}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10">
+            <Micro variant="ink" className="block mb-4">
+              Capabilities
+            </Micro>
+            {CAPABILITIES.map((cap) => (
+              <div
+                key={cap.idx}
+                className="flex justify-between py-3 border-b border-dashed border-rule-2 text-[14px] last:border-b-0"
+              >
+                <span className="text-ink">{cap.name}</span>
+                <span className="font-mono text-[10px] text-ink-3 pt-1">
+                  {cap.idx}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
       <Footer />

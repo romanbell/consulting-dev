@@ -39,7 +39,7 @@ export function HeroCallsign() {
   return (
     <div className="font-mono text-ink m-0 mb-2 max-w-[780px] relative" aria-hidden="true">
       {/* Head row */}
-      <div className="grid items-center gap-3.5 py-1 grid-cols-[14px_auto_1fr_auto] text-[10px] tracking-[0.14em] uppercase text-ink-3 pb-2.5">
+      <div className="grid items-center gap-3.5 py-1 grid-cols-[14px_auto_1fr_auto] max-[480px]:grid-cols-[14px_auto_1fr] text-[10px] tracking-[0.14em] uppercase text-ink-3 pb-2.5">
         <span className="text-ink font-mono text-[12px] leading-none">┗</span>
         <span className="text-ink tracking-[0.18em]">VRD–001</span>
         <span
@@ -51,7 +51,7 @@ export function HeroCallsign() {
             backgroundSize: "8px 1px",
           }}
         />
-        <span className="text-ink-2 text-[10.5px]">40.71°N · 74.00°W</span>
+        <span className="text-ink-2 text-[10.5px] max-[480px]:hidden">40.71°N · 74.00°W</span>
       </div>
 
       {/* Word rows */}
@@ -92,7 +92,7 @@ export function HeroCallsign() {
       ))}
 
       {/* Foot row */}
-      <div className="grid items-center gap-3.5 py-1 grid-cols-[14px_auto_1fr_auto] text-[10px] tracking-[0.14em] uppercase text-ink-3 pt-3">
+      <div className="grid items-center gap-3.5 py-1 grid-cols-[14px_auto_1fr_auto] max-[480px]:grid-cols-[14px_auto_1fr] text-[10px] tracking-[0.14em] uppercase text-ink-3 pt-3">
         <span className="text-ink font-mono text-[12px] leading-none">┏</span>
         <span className="text-ink-3">studio — est. 2024 · ny</span>
         <span
@@ -104,7 +104,7 @@ export function HeroCallsign() {
             backgroundSize: "8px 1px",
           }}
         />
-        <span className="text-ink-3 inline-flex items-center gap-2">
+        <span className="text-ink-3 inline-flex items-center gap-2 max-[480px]:hidden">
           <span
             className="w-[7px] h-[7px] rounded-full inline-block"
             style={{

@@ -16,14 +16,14 @@ export default function ContactPage() {
   return (
     <Shell>
       <Nav />
-      <main id="main" className="py-20">
+      <main id="main" className="py-20 max-[768px]:py-10">
         <Micro variant="accent" className="block mb-6">
           § 05 — Correspondence
         </Micro>
         <h1
-          className="font-sans font-light text-ink m-0 mb-12 max-w-[16ch] text-balance"
+          className="font-sans font-light text-ink m-0 mb-12 max-[768px]:mb-8 max-w-[16ch] text-balance"
           style={{
-            fontSize: "clamp(44px, 5.4vw, 92px)",
+            fontSize: "clamp(36px, 5.4vw, 92px)",
             letterSpacing: "-0.038em",
             lineHeight: 0.98,
           }}
@@ -31,14 +31,14 @@ export default function ContactPage() {
           Let&apos;s build <em className="not-italic text-accent-ink font-normal">something</em>.
         </h1>
 
-        <div className="flex gap-3 flex-wrap mb-9">
+        <div className="flex gap-3 flex-wrap mb-9 max-[768px]:mb-6">
           <CTA href={`mailto:${siteConfig.social.email}`} variant="primary">
             send_an_email
           </CTA>
           <CTA href={siteConfig.social.linkedin}>find_us_on_linkedin</CTA>
         </div>
 
-        <div className="font-mono text-[11px] text-ink-3 tracking-[0.06em] flex gap-10 flex-wrap mb-14">
+        <div className="font-mono text-[11px] text-ink-3 tracking-[0.06em] flex gap-10 max-[768px]:gap-6 flex-wrap mb-14 max-[768px]:mb-8">
           <span>
             Email <strong className="text-ink font-normal">{siteConfig.social.email}</strong>
           </span>
@@ -51,7 +51,8 @@ export default function ContactPage() {
           </span>
         </div>
 
-        <div className="grid grid-cols-4 gap-0 border-t border-rule max-[1080px]:grid-cols-2">
+        {/* Desktop: 4-column contact grid */}
+        <div className="max-[768px]:hidden grid grid-cols-4 gap-0 border-t border-rule max-[1080px]:grid-cols-2">
           {[
             {
               label: "Email",
@@ -94,6 +95,45 @@ export default function ContactPage() {
               <span className="font-mono text-[12px] text-ink-3 self-start group-hover:text-accent-ink group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-250" style={{ transitionTimingFunction: "var(--ease-studio)" }}>
                 ↗
               </span>
+            </a>
+          ))}
+        </div>
+
+        {/* Mobile: stacked contact rows with large tap targets */}
+        <div className="hidden max-[768px]:block border-t border-rule">
+          {[
+            {
+              label: "Email",
+              value: siteConfig.social.email,
+              href: `mailto:${siteConfig.social.email}`,
+            },
+            {
+              label: "LinkedIn",
+              value: "linkedin.com/veridium",
+              href: siteConfig.social.linkedin,
+            },
+            {
+              label: "GitHub",
+              value: "github.com/veridium",
+              href: siteConfig.social.github,
+            },
+          ].map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="flex items-center justify-between py-4 border-b border-rule no-underline text-ink min-h-[52px] active:bg-paper-2"
+              target={link.href.startsWith("http") ? "_blank" : undefined}
+              rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+            >
+              <div>
+                <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-ink-3 block leading-none mb-1">
+                  {link.label}
+                </span>
+                <span className="font-sans text-[16px] text-ink">
+                  {link.value}
+                </span>
+              </div>
+              <span className="text-ink-3 text-[16px]">↗</span>
             </a>
           ))}
         </div>

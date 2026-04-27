@@ -65,6 +65,11 @@ export function HoverPlate() {
   const plateRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<PlateData | null>(null);
   const [visible, setVisible] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(hover: none)").matches);
+  }, []);
 
   const onEnter = useCallback((e: Event) => {
     const el = e.currentTarget as HTMLElement;
@@ -91,6 +96,7 @@ export function HoverPlate() {
   }, []);
 
   useEffect(() => {
+    if (isTouch) return;
     function bind() {
       const rows = document.querySelectorAll<HTMLElement>("[data-project-row]");
       rows.forEach((r) => {
@@ -110,7 +116,9 @@ export function HoverPlate() {
         r.removeEventListener("mousemove", onMove as EventListener);
       });
     };
-  }, [onEnter, onLeave, onMove]);
+  }, [onEnter, onLeave, onMove, isTouch]);
+
+  if (isTouch) return null;
 
   return (
     <div

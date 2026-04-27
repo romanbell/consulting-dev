@@ -49,8 +49,6 @@ function PatchbayGlyph({ active }: { active: boolean }) {
 
 /* 002 BUILD: Scattered blocks that lock into a tight grid on hover. */
 function SequencerGlyph({ active }: { active: boolean }) {
-  // Rest positions: spread apart with clear gaps
-  // Active positions: snapped into a tight 3-col layout
   const blocks = [
     { rx: 0,  ry: 0,  ax: 2,  ay: 1,  w: 13, h: 6 },
     { rx: 3,  ry: 12, ax: 2,  ay: 9,  w: 13, h: 6 },
@@ -70,7 +68,7 @@ function SequencerGlyph({ active }: { active: boolean }) {
           x={active ? b.ax : b.rx}
           y={active ? b.ay : b.ry}
           width={b.w}
-          height={active ? b.h : b.h}
+          height={b.h}
           fill={active && i % 3 === 0 ? "var(--accent-ink)" : "none"}
           stroke={active ? "var(--accent-ink)" : "currentColor"}
           opacity={active ? 1 : 0.45}
@@ -88,14 +86,12 @@ function LfoGlyph({ active }: { active: boolean }) {
   return (
     <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true" style={{ overflow: "hidden" }}>
       <line x1="0" y1="14" x2="72" y2="14" strokeDasharray="2 2" opacity=".3" />
-      {/* Static waveform: visible at rest */}
       <path
         d="M-6 14 Q 4 4, 14 14 T 34 14 T 54 14 T 74 14"
         fill="none" stroke="currentColor" strokeWidth="1"
         opacity={active ? 0 : 0.5}
         style={{ transition: "opacity 0.4s ease" }}
       />
-      {/* Rolling waveform: only visible on hover */}
       <g style={{
         animation: active ? "lfo-roll 1.4s linear infinite" : "none",
       }}>
@@ -116,7 +112,6 @@ function LfoGlyph({ active }: { active: boolean }) {
 function HandoffGlyph({ active }: { active: boolean }) {
   return (
     <svg width="72" height="28" viewBox="0 0 72 28" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
-      {/* Static knob: visible at rest */}
       <g opacity={active ? 0 : 1} style={{ transition: "opacity 0.4s ease" }}>
         <circle cx="14" cy="14" r="9" opacity="0.5" />
         <line x1="14" y1="14" x2="14" y2="6" opacity="0.5" />
@@ -125,7 +120,6 @@ function HandoffGlyph({ active }: { active: boolean }) {
           <circle key={i} cx={p.x} cy={p.y} r="0.8" fill="currentColor" opacity="0.3" />
         ))}
       </g>
-      {/* Spinning knob: only visible on hover */}
       <g style={{
         transformOrigin: "14px 14px",
         animation: active ? "rot 2s linear infinite" : "none",
@@ -140,7 +134,6 @@ function HandoffGlyph({ active }: { active: boolean }) {
           <circle key={i} cx={p.x} cy={p.y} r="1" fill="var(--accent)" opacity="0.7" />
         ))}
       </g>
-      {/* Arrow */}
       <line x1="28" y1="14" x2={active ? "62" : "56"} y2="14"
         stroke={active ? "var(--accent-ink)" : "currentColor"}
         style={{ transition: "all 0.4s cubic-bezier(0.2,0.7,0.2,1)" }}
@@ -163,22 +156,57 @@ const GLYPH_COMPONENTS = {
 
 export function Method() {
   return (
-    <section
-      id="method"
-      className="grid gap-12"
-      style={{ gridTemplateColumns: "140px 1fr", padding: "104px 0" }}
-    >
-      <div>
-        <Micro variant="accent">§ 03 — Method</Micro>
+    <section id="method">
+      {/* ===== DESKTOP ===== */}
+      <div
+        className="hidden min-[769px]:grid gap-12"
+        style={{ gridTemplateColumns: "140px 1fr", padding: "104px 0" }}
+      >
+        <div>
+          <Micro variant="accent">§ 03 — Method</Micro>
+        </div>
+        <div>
+          <Headline className="mb-12">
+            Four movements, from <span className="text-accent-ink">question</span>{" "}
+            to system.
+          </Headline>
+          <div className="grid grid-cols-4 gap-0 border-t border-ink max-[1080px]:grid-cols-2">
+            {METHOD_STEPS.map((step, i) => (
+              <DesktopMethodCell key={step.n} step={step} index={i} />
+            ))}
+          </div>
+        </div>
       </div>
-      <div>
-        <Headline className="mb-12">
-          Four movements, from <span className="text-accent-ink">question</span>{" "}
-          to system.
-        </Headline>
-        <div className="grid grid-cols-4 gap-0 border-t border-ink max-[1080px]:grid-cols-2">
-          {METHOD_STEPS.map((step, i) => (
-            <MethodCell key={step.n} step={step} isLast={(i + 1) % 4 === 0} />
+
+      {/* ===== MOBILE ===== */}
+      {/* Compact vertical stack. Number, title, one-line body. No glyphs. */}
+      <div className="min-[769px]:hidden py-10">
+        <Micro variant="accent" className="block mb-5">
+          How we work
+        </Micro>
+        <h3 className="font-sans font-normal text-[22px] leading-[1.15] tracking-[-0.02em] text-ink m-0 mb-6">
+          Four movements, from{" "}
+          <span className="text-accent-ink">question</span> to system.
+        </h3>
+
+        <div className="flex flex-col gap-0 border-t border-ink">
+          {METHOD_STEPS.map((step) => (
+            <div
+              key={step.n}
+              className="py-4 border-b border-rule"
+            >
+              <div className="flex items-baseline gap-3 mb-1.5">
+                <span className="font-mono text-[10px] text-ink-3 tracking-[0.12em] shrink-0">
+                  {step.n}
+                </span>
+                <span className="font-sans font-medium text-[16px] tracking-[-0.01em] text-ink">
+                  {step.title}
+                </span>
+              </div>
+              <p className="m-0 text-ink-2 text-[14px] leading-[1.5] pl-[30px]">
+                {step.body}
+              </p>
+            </div>
           ))}
         </div>
       </div>
@@ -186,14 +214,15 @@ export function Method() {
   );
 }
 
-function MethodCell({ step, isLast }: { step: typeof METHOD_STEPS[number]; isLast: boolean }) {
+function DesktopMethodCell({ step, index }: { step: typeof METHOD_STEPS[number]; index: number }) {
   const [hovered, setHovered] = React.useState(false);
   const Glyph = GLYPH_COMPONENTS[step.glyphId];
+  const isLastCol = (index + 1) % 4 === 0;
 
   return (
     <div
       className="border-r border-b border-rule p-5 pb-[110px] relative min-h-[240px] transition-colors duration-250 hover:bg-paper-2"
-      style={{ borderRightWidth: isLast ? 0 : undefined }}
+      style={{ borderRightWidth: isLastCol ? 0 : undefined }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
