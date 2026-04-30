@@ -18,7 +18,9 @@ export function Fieldwork() {
         }}
       >
         <div>
-          <Micro variant="accent">§ 02 — Studio</Micro>
+          <span className="font-mono text-[11px] tracking-[0.06em] text-ink-3">
+            Studio
+          </span>
         </div>
         <div>
           <p className="font-sans font-normal text-[22px] leading-[1.3] text-ink m-0 mb-8 max-w-[30ch] border-l-2 border-ink pl-5 tracking-[-0.015em]">
@@ -68,9 +70,9 @@ export function Fieldwork() {
       {/* ===== MOBILE ===== */}
       {/* Condensed: blockquote, one paragraph, compact facts strip. */}
       <div className="min-[769px]:hidden py-10">
-        <Micro variant="accent" className="block mb-5">
+        <span className="block mb-5 font-mono text-[11px] tracking-[0.06em] text-ink-3">
           The studio
-        </Micro>
+        </span>
 
         <p
           className="font-sans font-normal text-[20px] leading-[1.35] text-ink m-0 mb-6 border-l-2 border-ink pl-4 tracking-[-0.01em]"

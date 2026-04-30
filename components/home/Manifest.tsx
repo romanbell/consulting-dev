@@ -17,7 +17,9 @@ export function Manifest() {
         }}
       >
         <div className="sticky top-6 max-[1080px]:static">
-          <Micro variant="accent">§ 01 — Projects</Micro>
+          <span className="font-mono text-[11px] tracking-[0.06em] text-ink-3">
+            Projects
+          </span>
           <div className="mt-2">
             <Micro variant="mute">08 projects</Micro>
           </div>
@@ -102,9 +104,9 @@ export function Manifest() {
       {/* ===== MOBILE ===== */}
       {/* 3 project cards, not a table. Title + tag + metric. "View all" link. */}
       <div className="min-[769px]:hidden pt-10 pb-4">
-        <Micro variant="accent" className="block mb-5">
+        <span className="block mb-5 font-mono text-[11px] tracking-[0.06em] text-ink-3">
           Selected work
-        </Micro>
+        </span>
 
         <div className="flex flex-col gap-0">
           {PROJECTS.slice(0, MOBILE_PROJECT_COUNT).map((p) => (

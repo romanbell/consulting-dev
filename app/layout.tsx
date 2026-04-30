@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { siteConfig } from "@/site.config";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
@@ -56,6 +56,12 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
     shortcut: "/favicon.ico",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

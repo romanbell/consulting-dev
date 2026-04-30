@@ -18,14 +18,33 @@ export function CustomCursor() {
     const el = elRef.current;
     if (!el) return;
     let visible = false;
+    const isTouch = window.matchMedia("(hover: none)").matches;
+    let fadeTimer: number | null = null;
+
+    function clearFade() {
+      if (fadeTimer !== null) {
+        window.clearTimeout(fadeTimer);
+        fadeTimer = null;
+      }
+    }
 
     function onMove(e: MouseEvent) {
       el!.style.translate = `${e.clientX - 11}px ${e.clientY - 11}px`;
       if (!visible) { visible = true; el!.style.opacity = "1"; }
       const sb = document.getElementById("sbCoords");
       if (sb) sb.textContent = `[${String(Math.round(e.clientX)).padStart(3, "0")},${String(Math.round(e.clientY)).padStart(3, "0")}]`;
+      // On touch, taps synthesize a single mousemove without a follow-up
+      // mouseleave, so the cross-hair would stick. Auto-fade after 3s.
+      if (isTouch) {
+        clearFade();
+        fadeTimer = window.setTimeout(() => {
+          visible = false;
+          el!.style.opacity = "0";
+          fadeTimer = null;
+        }, 3000);
+      }
     }
-    function onLeave() { visible = false; el!.style.opacity = "0"; }
+    function onLeave() { visible = false; el!.style.opacity = "0"; clearFade(); }
     function onEnter() { visible = true; el!.style.opacity = "1"; }
 
     document.addEventListener("mousemove", onMove);
@@ -48,6 +67,7 @@ export function CustomCursor() {
     });
 
     return () => {
+      clearFade();
       style.remove();
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseleave", onLeave);
@@ -70,6 +90,7 @@ export function CustomCursor() {
         pointerEvents: "none",
         zIndex: 100,
         opacity: 0,
+        transition: "opacity 0.4s ease",
         contain: "layout style size",
       }}
     >

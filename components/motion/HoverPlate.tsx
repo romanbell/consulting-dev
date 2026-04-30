@@ -1,64 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { Identicon } from "@/components/ui/Identicon";
 
 interface PlateData {
   ref: string;
   sector: string;
   outcome: string;
-}
-
-/** Generate a mirrored pixel hash (GitHub identicon style) from a seed string.
- *  cols = total columns (must be odd for symmetry). rows = total rows. */
-function generateIdenticon(seed: string, cols: number, rows: number): boolean[][] {
-  let h = 0;
-  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) & 0x7fffffff;
-
-  const half = Math.ceil(cols / 2);
-  const grid: boolean[][] = [];
-  for (let row = 0; row < rows; row++) {
-    const line: boolean[] = [];
-    for (let col = 0; col < half; col++) {
-      h = (h * 1103515245 + 12345) & 0x7fffffff;
-      line.push((h % 3) !== 0); // ~66% fill for denser pattern
-    }
-    // Mirror
-    const full = [...line];
-    for (let col = half - 2; col >= 0; col--) {
-      full.push(line[col] ?? false);
-    }
-    grid.push(full);
-  }
-  return grid;
-}
-
-function IdenticonCanvas({ seed }: { seed: string }) {
-  const cols = 13;
-  const rows = 7;
-  const grid = generateIdenticon(seed, cols, rows);
-
-  return (
-    <svg
-      viewBox={`0 0 ${cols} ${rows}`}
-      preserveAspectRatio="none"
-      className="absolute inset-0 w-full h-full"
-      style={{ zIndex: 1 }}
-    >
-      {grid.map((row, ry) =>
-        row.map((on, cx) => (
-          <rect
-            key={`${ry}-${cx}`}
-            x={cx}
-            y={ry}
-            width="1"
-            height="1"
-            fill={on ? "var(--accent)" : "transparent"}
-            opacity={on ? 0.45 : 0}
-          />
-        ))
-      )}
-    </svg>
-  );
 }
 
 export function HoverPlate() {
@@ -109,12 +57,21 @@ export function HoverPlate() {
 
     const rows = bind();
 
+    // Hide on scroll: in-page anchor jumps trigger smooth scroll without
+    // moving the cursor in viewport space, so mouseleave never fires and
+    // the plate gets stuck. Same for wheel/keyboard scrolling over a row.
+    function onScroll() {
+      setVisible(false);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
       rows.forEach((r) => {
         r.removeEventListener("mouseenter", onEnter);
         r.removeEventListener("mouseleave", onLeave);
         r.removeEventListener("mousemove", onMove as EventListener);
       });
+      window.removeEventListener("scroll", onScroll);
     };
   }, [onEnter, onLeave, onMove, isTouch]);
 
@@ -146,7 +103,17 @@ export function HoverPlate() {
               "repeating-linear-gradient(-45deg, transparent 0 8px, rgba(23,23,26,.04) 8px 9px)",
           }}
         />
-        {data && <IdenticonCanvas seed={data.ref} />}
+        {data && (
+          <Identicon
+            seed={data.ref}
+            animateKey={data.ref}
+            className="absolute inset-0 w-full h-full"
+            style={{ zIndex: 1 }}
+            totalMs={400}
+            cellMs={180}
+            targetOpacity={0.55}
+          />
+        )}
       </div>
       <div className="flex justify-between py-[5px] font-mono text-[10.5px] border-b border-dashed border-rule-2">
         <span className="text-ink-3 tracking-[0.06em]">REF.</span>

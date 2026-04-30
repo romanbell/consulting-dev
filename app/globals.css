@@ -2,13 +2,13 @@
 
 /* ============ DESIGN TOKENS ============ */
 :root {
-  --paper: #f3f0e8;
-  --paper-2: #ede9df;
+  --paper: #fafaf7;
+  --paper-2: #f1f1ed;
   --ink: #17171a;
   --ink-2: #45454a;
   --ink-3: #8a8a8e;
-  --rule: #d9d4c6;
-  --rule-2: #c8c2b0;
+  --rule: #e2e0d8;
+  --rule-2: #cdcbc1;
   --accent: oklch(0.62 0.07 180);
   --accent-ink: oklch(0.48 0.08 180);
 
@@ -47,6 +47,10 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  max-width: 100%;
 }
 
 body {
@@ -62,6 +66,20 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x: hidden;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* Defensive: long unbreakable strings (URLs, etc.) shouldn't push the
+   document wider than the viewport on narrow phones. */
+@media (max-width: 768px) {
+  h1, h2, h3, h4, p, a, span, li {
+    overflow-wrap: anywhere;
+  }
 }
 
 /* Paper grain texture */
@@ -270,6 +288,17 @@ a:hover:not(.cta-btn) {
   }
 }
 
+@keyframes hash-in {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: var(--hash-target-opacity, 0.45);
+    transform: scale(1);
+  }
+}
+
 /* ============ REDUCED MOTION ============ */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -300,7 +329,7 @@ a:hover:not(.cta-btn) {
     font-size: 16px;
     line-height: 1.5;
     /* Bottom CTA bar clearance */
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
   }
 
   /* Disable grain texture on mobile (perf) */

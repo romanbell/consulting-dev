@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Micro } from "@/components/typography/Micro";
 import { Headline } from "@/components/typography/Headline";
 import { METHOD_STEPS } from "@/lib/content/method";
 
@@ -163,7 +162,9 @@ export function Method() {
         style={{ gridTemplateColumns: "140px 1fr", padding: "104px 0" }}
       >
         <div>
-          <Micro variant="accent">§ 03 — Method</Micro>
+          <span className="font-mono text-[11px] tracking-[0.06em] text-ink-3">
+            Method
+          </span>
         </div>
         <div>
           <Headline className="mb-12">
@@ -181,9 +182,9 @@ export function Method() {
       {/* ===== MOBILE ===== */}
       {/* Compact vertical stack. Number, title, one-line body. No glyphs. */}
       <div className="min-[769px]:hidden py-10">
-        <Micro variant="accent" className="block mb-5">
+        <span className="block mb-5 font-mono text-[11px] tracking-[0.06em] text-ink-3">
           How we work
-        </Micro>
+        </span>
         <h3 className="font-sans font-normal text-[22px] leading-[1.15] tracking-[-0.02em] text-ink m-0 mb-6">
           Four movements, from{" "}
           <span className="text-accent-ink">question</span> to system.

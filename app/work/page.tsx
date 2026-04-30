@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Shell } from "@/components/layout/Shell";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
-import { Micro } from "@/components/typography/Micro";
 import { Headline } from "@/components/typography/Headline";
 import { PROJECTS } from "@/lib/content/projects";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonLd";
@@ -31,9 +30,6 @@ export default function WorkPage() {
             ),
           }}
         />
-        <Micro variant="accent" className="block mb-4">
-          § 01 — Manifest
-        </Micro>
         <Headline className="mb-4 max-[768px]:text-[24px]">
           Selected projects from the studio archive.
         </Headline>

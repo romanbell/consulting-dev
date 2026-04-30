@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const NAV_ITEMS = [
-  { n: "01", label: "Work", href: "/#manifest" },
-  { n: "02", label: "Studio", href: "/#fieldwork" },
-  { n: "03", label: "Method", href: "/#method" },
-  { n: "04", label: "Contact", href: "/#contact" },
+  { label: "Work", href: "/#manifest" },
+  { label: "Studio", href: "/#fieldwork" },
+  { label: "Method", href: "/#method" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export function Nav() {
@@ -54,11 +54,8 @@ export function Nav() {
         {/* Desktop nav links */}
         <ul className="hidden min-[769px]:flex gap-8 list-none p-0 m-0 text-[13px] text-ink-2">
           {NAV_ITEMS.map((item) => (
-            <li key={item.n}>
+            <li key={item.label}>
               <Link href={item.href} className="relative group">
-                <span className="font-mono text-[9px] text-ink-3 mr-1.5 tracking-[0.08em]">
-                  {item.n}
-                </span>
                 {item.label}
                 <span
                   className="absolute left-0 right-0 -bottom-1.5 h-px bg-ink origin-left scale-x-0 transition-transform duration-350"
@@ -94,7 +91,7 @@ export function Nav() {
           <ul className="list-none p-0 m-0 flex flex-col gap-0">
             {NAV_ITEMS.map((item, i) => (
               <li
-                key={item.n}
+                key={item.label}
                 className="border-b border-rule"
                 style={{
                   transform: open ? "translateY(0)" : "translateY(12px)",
@@ -107,9 +104,6 @@ export function Nav() {
                   className="flex items-baseline gap-4 py-5 text-ink no-underline"
                   onClick={() => setOpen(false)}
                 >
-                  <span className="font-mono text-[10px] text-ink-3 tracking-[0.1em]">
-                    {item.n}
-                  </span>
                   <span className="font-sans text-[28px] font-normal tracking-[-0.02em]">
                     {item.label}
                   </span>
