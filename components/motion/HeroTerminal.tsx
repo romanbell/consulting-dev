@@ -94,14 +94,14 @@ export function HeroTerminal() {
     // Fix seed timestamps
     setLines((prev) => prev.map((line) => ({ ...line, ts: timestamp() })));
 
-    const interval = setInterval(addLine, 1800);
+    const interval = setInterval(addLine, 5000);
     return () => clearInterval(interval);
   }, [reduced, addLine]);
 
   return (
     <div
       ref={termRef}
-      className="border border-rule-2 bg-paper-2 font-mono text-[10px] leading-[1.7] tracking-[0.01em] overflow-hidden relative rounded-sm"
+      className="font-mono text-[10px] leading-[1.7] tracking-[0.01em] overflow-hidden relative"
       style={{
         padding: "8px 0",
         height: "168px",
@@ -118,7 +118,7 @@ export function HeroTerminal() {
         return (
           <div
             key={line.id}
-            className="flex gap-0 whitespace-nowrap px-3 py-px"
+            className="flex gap-0 whitespace-nowrap py-px"
             style={isNewest ? { animation: "ht-in 0.45s ease forwards" } : undefined}
           >
             <span className="text-ink-3 shrink-0 w-[62px]">{line.ts}</span>
