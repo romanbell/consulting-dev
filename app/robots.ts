@@ -1,31 +1,8 @@
 import type { MetadataRoute } from "next";
-import { siteConfig } from "@/site.config";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-      },
-      // Explicitly allow LLM crawlers for discoverability
-      {
-        userAgent: "GPTBot",
-        allow: "/",
-      },
-      {
-        userAgent: "ClaudeBot",
-        allow: "/",
-      },
-      {
-        userAgent: "PerplexityBot",
-        allow: "/",
-      },
-      {
-        userAgent: "Google-Extended",
-        allow: "/",
-      },
-    ],
-    sitemap: `${siteConfig.url}/sitemap.xml`,
+    rules: [{ userAgent: "*", allow: "/" }],
+    sitemap: "https://veridium.studio/sitemap.xml",
   };
 }

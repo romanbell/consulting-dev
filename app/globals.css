@@ -1,110 +1,79 @@
 @import "tailwindcss";
 
-/* ============ DESIGN TOKENS ============ */
+/* Animatable length vars used to sequence the mobile cell's flight. */
+@property --mob-tx {
+  syntax: "<length>";
+  initial-value: 0px;
+  inherits: false;
+}
+
+@property --mob-ty {
+  syntax: "<length>";
+  initial-value: 0px;
+  inherits: false;
+}
+
 :root {
-  --paper: #f3f0e8;
-  --paper-2: #ede9df;
-  --ink: #17171a;
-  --ink-2: #45454a;
-  --ink-3: #8a8a8e;
-  --rule: #d9d4c6;
-  --rule-2: #c8c2b0;
-  --accent: oklch(0.62 0.07 180);
-  --accent-ink: oklch(0.48 0.08 180);
+  --paper: #fafaf7;
+  --ink: #141414;
+  --ink-soft: #6b6b6b;
+  --rule-soft: rgba(20, 20, 20, 0.07);
+  --seafoam: #9fd8c4;
+  --seafoam-soft: rgba(159, 216, 196, 0.32);
 
-  --font-sans: var(--font-geist-sans), "Söhne", "Inter Tight", system-ui,
-    sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "JetBrains Mono",
-    monospace;
+  /* Default desktop grid: left column + 30 evenly-spaced right columns.
+     Hovering a cell overrides this (one column widens to --hover-fr).
+     The bars compute their own left/width from the same numbers, so they
+     always land exactly on the grid, hover state included. */
+  --grid-cols: minmax(140px, 20%) repeat(30, minmax(0, 1fr));
+  --row-h: 22px;
 
-  --ease-studio: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --shell-max: 1440px;
-  --shell-px: 64px;
+  --left-col-w: max(140px, 20%);
+  --tracks: 30;
+  /* Extra fr added to the track total while a cell is hovered (set to
+     0.3 by JS so the math matches the 1.3fr widened column). */
+  --hover-extra: 0;
 }
 
-/* ============ TAILWIND v4 THEME ============ */
-@theme {
-  --color-paper: var(--paper);
-  --color-paper-2: var(--paper-2);
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-3: var(--ink-3);
-  --color-rule: var(--rule);
-  --color-rule-2: var(--rule-2);
-  --color-accent: var(--accent);
-  --color-accent-ink: var(--accent-ink);
-
-  --font-family-sans: var(--font-sans);
-  --font-family-mono: var(--font-mono);
-}
-
-/* ============ BASE ============ */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
+html,
 body {
   margin: 0;
   padding: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-sans);
-  font-weight: 400;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
-  line-height: 1.45;
-  letter-spacing: -0.005em;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
-  overflow-x: hidden;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Paper grain texture */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background-image: radial-gradient(
-    rgba(23, 23, 26, 0.035) 1px,
-    transparent 1px
-  );
-  background-size: 3px 3px;
-  mix-blend-mode: multiply;
-  opacity: 0.5;
+body {
+  min-height: 100dvh;
+  overflow-x: clip;
 }
 
-/* Grid overlay (toggled via JS) */
-.grid-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-  display: none;
-  background-image: linear-gradient(
-    to right,
-    rgba(23, 23, 26, 0.06) 1px,
-    transparent 1px
-  );
-  background-size: calc((100vw - 128px) / 12) 100%;
-  background-position: 64px 0;
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    black 64px,
-    black calc(100% - 64px),
-    transparent 100%
-  );
+@media (max-width: 767.98px) {
+  body:has(.item[data-open="true"]),
+  body:has(.info[data-open="true"]) {
+    overflow: hidden;
+  }
 }
 
-body.grid-on .grid-overlay {
-  display: block;
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
 }
 
 a {
@@ -112,205 +81,939 @@ a {
   text-decoration: none;
 }
 
-a:hover:not(.cta-btn) {
-  color: var(--accent-ink);
+::selection {
+  background: var(--seafoam-soft);
 }
 
-
-/* ============ SKIP LINK ============ */
-.skip-link {
-  position: absolute;
-  top: -100px;
-  left: 16px;
-  z-index: 100;
-  padding: 8px 16px;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  border-radius: 0 0 4px 4px;
-  transition: top 0.2s ease;
-}
-
-.skip-link:focus {
-  top: 0;
-  color: var(--paper);
-}
-
-/* ============ FOCUS STYLES ============ */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 1px solid var(--seafoam);
   outline-offset: 2px;
 }
 
-/* ============ ANIMATIONS ============ */
-@keyframes ht-in {
-  from {
-    opacity: 0;
-    transform: translateX(-6px);
+.page {
+  position: relative;
+  padding: 56px 32px 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page::after {
+  content: "";
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--rule-soft) 0,
+    var(--rule-soft) 1px,
+    transparent 1px,
+    transparent var(--row-h)
+  );
+  background-position: 0 -1px;
+}
+
+/* Lines container: only this one container reacts to the cursor's
+   widening via --grid-cols. Items position their cells absolutely, so
+   they don't need to chase a grid-template-columns transition. */
+.lines {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 32px;
+  right: 32px;
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  grid-template-rows: 1fr;
+  pointer-events: none;
+  z-index: 5;
+  transition: grid-template-columns 220ms ease-in-out;
+}
+
+.line {
+  grid-row: 1;
+  height: 100%;
+  position: relative;
+  border-left: 1px solid var(--rule-soft);
+  transition:
+    border-left-color 480ms ease-in-out,
+    border-right-color 480ms ease-in-out;
+}
+
+.line:last-child {
+  border-right: 1px solid var(--rule-soft);
+}
+
+.line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2px;
+  width: 1px;
+  background: rgba(20, 20, 20, 0.10);
+  opacity: 0;
+  transition: opacity 480ms ease-in-out;
+}
+
+.line:last-child::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -2px;
+  width: 1px;
+  background: rgba(20, 20, 20, 0.10);
+  opacity: 0;
+  transition: opacity 480ms ease-in-out;
+}
+
+.page:has(.item[data-open="true"]) .line,
+.page:has(.info[data-open="true"]) .line {
+  border-left-color: rgba(20, 20, 20, 0.18);
+}
+
+.page:has(.item[data-open="true"]) .line:last-child,
+.page:has(.info[data-open="true"]) .line:last-child {
+  border-right-color: rgba(20, 20, 20, 0.18);
+}
+
+.page:has(.item[data-open="true"]) .line::before,
+.page:has(.info[data-open="true"]) .line::before,
+.page:has(.item[data-open="true"]) .line:last-child::after,
+.page:has(.info[data-open="true"]) .line:last-child::after {
+  opacity: 1;
+}
+
+.page-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  align-items: center;
+  width: 100%;
+  transition: grid-template-columns 220ms ease-in-out;
+}
+
+.wordmark-row {
+  margin: 0 0 56px;
+}
+
+.wordmark {
+  grid-column: 1;
+  margin: 0;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.info-toggle {
+  grid-column: 26 / -1;
+  justify-self: end;
+  align-self: start;
+  font-size: 13px;
+  color: var(--ink-soft);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 6;
+  transition: color 200ms ease-in-out;
+}
+
+.info-toggle:hover {
+  color: var(--ink);
+}
+
+.info-toggle[data-open="true"] {
+  color: var(--ink);
+}
+
+.rows {
+  position: relative;
+  display: block;
+  border-top: 1px solid var(--rule-soft);
+}
+
+/* The row's drawer expansion transitions only grid-template-rows. The
+   cell's animation is handled independently below. */
+.item {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  grid-template-rows: var(--row-h) 0fr;
+  position: relative;
+  width: 100%;
+  border-bottom: 1px solid var(--rule-soft);
+  transition: grid-template-rows 220ms ease-in-out;
+}
+
+.item[data-open="true"] {
+  grid-template-rows: var(--row-h) 1fr;
+}
+
+.item__head {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  height: var(--row-h);
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Text stays above the cell (which sits at z-index 4), so the head keeps
+   a transparent background and only lifts its stacking level. */
+.item[data-open="true"] .item__head {
+  z-index: 6;
+}
+
+.row__title {
+  grid-column: 1;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 16px;
+}
+
+/* The colored cell is absolutely positioned inside the item box, but its
+   left/width mirror the grid template's exact math: unit width divides
+   the right area by (tracks + hover extra), and per-cell vars from JS
+   account for the widened hovered column. Every state lands on a grid
+   line. Hover shifts use the same 220ms as the lines' grid transition. */
+.bar {
+  --unit: calc(
+    (100% - var(--left-col-w)) / (var(--tracks) + var(--hover-extra, 0))
+  );
+  --bar-col: var(--col, 16);
+  --bar-left: calc(
+    var(--left-col-w) +
+    (var(--bar-col) - 2 + var(--extra-before, 0)) * var(--unit)
+  );
+  position: absolute;
+  top: 0;
+  left: var(--bar-left);
+  width: calc(var(--self-fr, 1) * var(--unit));
+  height: var(--row-h);
+  background: var(--c, var(--ink));
+  z-index: 4;
+  pointer-events: auto;
+  cursor: pointer;
+  transition:
+    left 220ms ease-in-out 0ms,
+    width 220ms ease-in-out 0ms,
+    height 220ms ease-in-out 0ms;
+}
+
+/* Close sequence mirrors the open order: vertical first (shrink height
+   while the drawer collapses), then horizontal (slide back to its
+   column). data-closing is set by JS for the duration of the close. */
+.bar[data-closing="true"] {
+  transition:
+    height 220ms ease-in-out 0ms,
+    left 220ms ease-in-out 220ms,
+    width 220ms ease-in-out 220ms;
+}
+
+.bar[data-flickering="true"] {
+  transition: none;
+}
+
+/* Open: the cell grows down to fill the expanded row (vertical), then
+   slides right and widens (horizontal) onto the grid's last 8 tracks,
+   flush with the right edge, clear of the body text. */
+.item[data-open="true"] .bar {
+  left: calc(var(--left-col-w) + 22 * var(--unit));
+  width: calc(8 * var(--unit));
+  height: 100%;
+  transition:
+    height 220ms ease-in-out 0ms,
+    left 220ms ease-in-out 220ms,
+    width 220ms ease-in-out 220ms;
+}
+
+/* Drawer (row 2). Transparent so the cell (z-index 4, behind this) shows
+   through; the text inside still paints above the cell. */
+.item__drawer {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  position: relative;
+  z-index: 6;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.drawer__content {
+  display: grid;
+  grid-template-columns: subgrid;
+  padding: 14px 0 26px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 160ms ease-in-out,
+    transform 160ms ease-in-out;
+}
+
+.item[data-open="true"] .drawer__content {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 240ms ease-in-out 220ms,
+    transform 240ms ease-in-out 220ms;
+}
+
+.drawer__title {
+  display: none;
+}
+
+.drawer__meta {
+  grid-column: 1;
+  font-family: var(--font-sans), sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  padding-left: 32px;
+  align-self: start;
+}
+
+/* Body sits on the left half, leaving room for the cell's right-side
+   square in the open state. */
+.drawer__body {
+  grid-column: 2 / 23;
+  padding-right: 16px;
+  align-self: start;
+}
+
+.drawer__body p {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.drawer-close,
+.info-close {
+  display: none;
+}
+
+.info {
+  position: relative;
+  z-index: 6;
+  display: grid;
+  grid-template-rows: 0fr;
+  background: var(--paper);
+  transition: grid-template-rows 450ms ease-in-out;
+}
+
+.info[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.info__inner {
+  overflow: hidden;
+  min-height: 0;
+  background: var(--paper);
+}
+
+.info__list {
+  margin-top: 56px;
+  border-top: 1px solid var(--rule-soft);
+  background: var(--paper);
+}
+
+.info__row {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  align-items: center;
+  min-height: 28px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  background: var(--paper);
+  transition: grid-template-columns 220ms ease-in-out;
+}
+
+.info__k {
+  grid-column: 1;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-soft);
+  padding-right: 16px;
+}
+
+.info__v {
+  grid-column: 2 / -1;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.info__v a {
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink-soft);
+  transition: border-color 200ms ease-in-out;
+}
+
+.info__v a:hover {
+  border-bottom-color: var(--ink);
+}
+
+/* =====================================================================
+   Mobile: 1 left column + 10 right columns. Bars sit at varied column
+   positions just like desktop. Flicker runs the same way. Tapping a row
+   opens a popup with the cell flying down to the bottom-right corner.
+   ===================================================================== */
+
+@media (max-width: 767.98px) {
+  :root {
+    /* Slightly wider left column for the titles + 9 right cols (one less
+       than before so each col stays wide enough to feel like a grid). */
+    --grid-cols: minmax(150px, 42%) repeat(9, minmax(0, 1fr));
+    --row-h: 38px;
+    --left-col-w: max(150px, 42%);
+    --tracks: 9;
   }
-  to {
+
+  .page {
+    padding: 28px 18px 0;
+  }
+
+  .lines {
+    left: 18px;
+    right: 18px;
+  }
+
+  .wordmark-row {
+    margin-bottom: 28px;
+  }
+
+  .info-toggle {
+    grid-column: 9 / -1;
+  }
+
+  .row__title {
+    grid-column: 1;
+    font-size: 13px;
+    line-height: 1.3;
+    padding-right: 12px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  /* Mobile cell sits at its row's mobile column, sharing the desktop
+     grid math via --bar-col. transform: translate flies it to the
+     bottom-right corner when the row opens, via the animatable --mob-tx
+     / --mob-ty vars set by JS. Sequenced: push-down → push-right →
+     expand. */
+  .bar {
+    --bar-col: var(--col-mobile, 5);
+    transform: translate(var(--mob-tx, 0px), var(--mob-ty, 0px));
+    /* Close (reverse) sequence: shrink first, then push left back, then
+       push up back. */
+    transition:
+      width 140ms ease-in-out 0ms,
+      height 140ms ease-in-out 0ms,
+      --mob-tx 190ms ease-in-out 140ms,
+      --mob-ty 190ms ease-in-out 330ms;
+  }
+
+  /* The desktop data-closing sequence doesn't apply here; the mobile
+     close is the base transition above. */
+  .bar[data-closing="true"] {
+    transition:
+      width 140ms ease-in-out 0ms,
+      height 140ms ease-in-out 0ms,
+      --mob-tx 190ms ease-in-out 140ms,
+      --mob-ty 190ms ease-in-out 330ms;
+  }
+
+  /* Open sequence: push down, then push right, then expand. */
+  .item[data-open="true"] .bar {
+    left: var(--bar-left);
+    top: 0;
+    width: 120px;
+    height: 120px;
+    z-index: 102;
+    pointer-events: auto;
+    cursor: pointer;
+    transition:
+      --mob-ty 190ms ease-in-out 0ms,
+      --mob-tx 190ms ease-in-out 190ms,
+      width 150ms ease-in-out 380ms,
+      height 150ms ease-in-out 380ms;
+  }
+
+  /* The drawer becomes a fullscreen popup. */
+  .item {
+    transition: none;
+  }
+
+  .item__drawer {
+    display: none;
+  }
+
+  .item[data-open="true"] .item__drawer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 100;
+    background: var(--paper);
+    overflow-y: auto;
+  }
+
+  .item[data-open="true"] .drawer__content {
+    display: flex;
+    flex-direction: column;
+    padding: 64px 22px 32px;
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+
+  .drawer__title {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+
+  .drawer__meta {
+    grid-column: auto;
+    padding-left: 0;
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .drawer__body {
+    grid-column: auto;
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .drawer__body p {
+    max-width: none;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .drawer-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 16px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    color: rgba(20, 20, 20, 0.36);
+    font-size: 26px;
+    line-height: 1;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    z-index: 101;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Info popup on mobile. */
+  .info {
+    display: none;
+  }
+
+  .info[data-open="true"] {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 100;
+    background: var(--paper);
+    overflow-y: auto;
+    grid-template-rows: 1fr;
+    transition: none;
+  }
+
+  .info[data-open="true"] .info__inner {
+    overflow: visible;
+    padding: 64px 22px 32px;
+  }
+
+  .info[data-open="true"] .info__list {
+    margin-top: 0;
+    border-top: 0;
+  }
+
+  .info[data-open="true"] .info__row {
+    grid-template-columns: 110px 1fr;
+    padding: 10px 0;
+    align-items: baseline;
+  }
+
+  .info__k {
+    font-size: 13px;
+  }
+
+  .info__v {
+    font-size: 14px;
+  }
+
+  .info-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 16px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    color: rgba(20, 20, 20, 0.36);
+    font-size: 26px;
+    line-height: 1;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    z-index: 101;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-@keyframes lfo-roll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-40px);
-  }
-}
-
-@keyframes cable-wave {
-  0% {
-    d: path("M11.5 14 C 17 5, 22 5, 26 14");
-  }
-  50% {
-    d: path("M11.5 14 C 17 23, 22 23, 26 14");
-  }
-  100% {
-    d: path("M11.5 14 C 17 5, 22 5, 26 14");
-  }
-}
-
-@keyframes cable-wave-2 {
-  0% {
-    d: path("M29.5 14 C 35 23, 40 23, 44 14");
-  }
-  50% {
-    d: path("M29.5 14 C 35 5, 40 5, 44 14");
-  }
-  100% {
-    d: path("M29.5 14 C 35 23, 40 23, 44 14");
-  }
-}
-
-@keyframes marquee-l {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes marquee-r {
-  0% {
-    transform: translateX(-50%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 152, 139, 0.35);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(0, 152, 139, 0);
-  }
-}
-
-@keyframes caret {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes csblink {
-  0%,
-  60% {
-    opacity: 1;
-  }
-  61%,
-  100% {
-    opacity: 0.2;
-  }
-}
-
-@keyframes lfo {
-  0% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(8px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes rot {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes blinkSig {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* ============ REDUCED MOTION ============ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  html {
-    scroll-behavior: auto;
+    animation-duration: 0.01ms !important;
   }
 }
 
-/* ============ RESPONSIVE ============ */
-@media (max-width: 1080px) {
-  :root {
-    --shell-px: 28px;
-  }
+/* ------------------------------------------------------------------ */
+/* Home (Figma veri-v2-vf: desktop 1098:129, mobile 1098:155)         */
+/* ------------------------------------------------------------------ */
+
+.home {
+  min-height: 100svh;
+  background: #fff;
+  color: #686868;
 }
 
-@media (max-width: 768px) {
-  :root {
-    --shell-px: 20px;
-  }
+.home h1,
+.home h2,
+.home p {
+  margin: 0;
+}
 
-  body {
-    font-size: 16px;
-    line-height: 1.5;
-    /* Bottom CTA bar clearance */
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
-  }
+/* Content is absolutely positioned, so it cannot grow these containers.
+   The px floor keeps the last section reachable on short viewports. */
+.home-desktop,
+.home-mobile {
+  position: relative;
+  min-height: 100svh;
+  overflow: clip;
+}
 
-  /* Disable grain texture on mobile (perf) */
-  body::before {
+.home-desktop {
+  min-height: max(100svh, 782px);
+}
+
+.home-mobile {
+  display: none;
+}
+
+/* Wordmark block: blurred black type under a white 80% backdrop-blur
+   veil, exactly as the Figma background-blur rectangle renders it. */
+.home-mark {
+  position: absolute;
+  left: 24px;
+  top: 32px;
+  width: 820px;
+  height: 279px;
+}
+
+.home-mark__rect {
+  position: absolute;
+  left: 1px;
+  top: 139px;
+  width: 820px;
+  height: 140px;
+  background: #fff;
+}
+
+.home-mark__text {
+  position: absolute;
+  left: 34px;
+  top: 26px;
+  width: 743px;
+  font-weight: 700;
+  font-size: 186.101px;
+  line-height: normal;
+  letter-spacing: -11.1661px;
+  color: #000;
+  filter: blur(1.322px);
+}
+
+.home-mark__veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  /* Figma bg-blur radius 23.688 exports as CSS blur(11.84px). */
+  -webkit-backdrop-filter: blur(11.84px);
+  backdrop-filter: blur(11.84px);
+}
+
+/* Cursor lens: two masked copies of the type above the veil. The gray
+   matches the veiled tone (black at 20% over white), so only sharpness
+   appears to change inside the lens. --lx/--ly/--lens are driven per
+   frame from Home.tsx with easing, which produces the ripple trail. */
+.home-mark__lens {
+  position: absolute;
+  inset: 0;
+  opacity: var(--lens, 0);
+  pointer-events: none;
+}
+
+.home-mark__lens span {
+  position: absolute;
+  left: 34px;
+  top: 26px;
+  width: 743px;
+  font-weight: 700;
+  font-size: 186.101px;
+  line-height: normal;
+  letter-spacing: -11.1661px;
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.home-mark__lens--outer {
+  -webkit-mask-image: radial-gradient(
+    circle 175px at var(--lx, 50%) var(--ly, 50%),
+    rgb(0 0 0) 0%,
+    rgb(0 0 0 / 0.5) 55%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle 175px at var(--lx, 50%) var(--ly, 50%),
+    rgb(0 0 0) 0%,
+    rgb(0 0 0 / 0.5) 55%,
+    transparent 100%
+  );
+}
+
+.home-mark__lens--outer span {
+  filter: blur(5.5px);
+}
+
+.home-mark__lens--inner {
+  -webkit-mask-image: radial-gradient(
+    circle 95px at var(--lx, 50%) var(--ly, 50%),
+    rgb(0 0 0) 0%,
+    rgb(0 0 0 / 0.65) 50%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle 95px at var(--lx, 50%) var(--ly, 50%),
+    rgb(0 0 0) 0%,
+    rgb(0 0 0 / 0.65) 50%,
+    transparent 100%
+  );
+}
+
+.home-mark__lens--inner span {
+  filter: blur(2.4px);
+}
+
+/* Desktop body sections: one size down from the file's 20px, tracking
+   kept at the design's -6% ratio. Content width matches the wordmark
+   text block (743px from x=58, right edge 801 = pill right edge). */
+.home-heading {
+  position: absolute;
+  left: 58px;
+  width: 743px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+}
+
+.home-body {
+  position: absolute;
+  left: 58px;
+  top: 372px;
+  width: 743px;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+}
+
+.home-focus-row {
+  position: absolute;
+  left: 58px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+  white-space: nowrap;
+}
+
+.home-star {
+  display: block;
+  flex: none;
+}
+
+.home-msg {
+  position: absolute;
+  left: 63px;
+  top: 730px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+  white-space: nowrap;
+}
+
+.home-cta {
+  position: absolute;
+  left: 575px;
+  top: 714px;
+  width: 226px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #d6eaaa;
+  border-radius: 39px;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+  color: #686868;
+  text-decoration: none;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.home-cta:hover {
+  background: #c9e194;
+  color: #5a5a5a;
+}
+
+@media (max-width: 767.98px) {
+  .home-desktop {
     display: none;
   }
-}
 
-@media (max-width: 480px) {
-  :root {
-    --shell-px: 16px;
+  .home-mobile {
+    display: block;
+    /* Content ends at 565px plus the wordmark growth offset. */
+    min-height: max(100svh, calc(451.447px + 33.982vw + 20px));
+  }
+
+  /* Mobile wordmark scales with the viewport so it always spans the
+     full width. Values are the 393px-frame measurements as vw. */
+  .home-mobile .home-mark {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 33.982vw; /* 133.553 / 393 */
+  }
+
+  .home-mobile .home-mark__rect {
+    left: 0;
+    top: 16.93vw; /* 66.536 / 393 */
+    width: 100%;
+    height: 17.052vw; /* 67.016 / 393 */
+  }
+
+  .home-mobile .home-mark__text {
+    left: 4.141vw; /* 16.275 / 393 */
+    top: 3.167vw; /* 12.446 / 393 */
+    width: auto;
+    font-size: 22.668vw; /* 89.084 / 393 */
+    letter-spacing: -1.36vw; /* -5.345 / 393 */
+    filter: blur(0.161vw); /* 0.633 / 393 */
+  }
+
+  .home-mobile .home-mark__veil {
+    -webkit-backdrop-filter: blur(1.443vw); /* 5.67 / 393 */
+    backdrop-filter: blur(1.443vw);
+  }
+
+  /* Content shifts down by the wordmark's growth past its 393px-frame
+     height, so wider phones never overlap. Zero at 393px wide. */
+  .home-mobile-flow {
+    position: absolute;
+    inset: 0;
+    top: calc(33.982vw - 133.553px);
+  }
+
+  .home-mobile .home-heading {
+    left: 15px;
+    right: 15px;
+    width: auto;
+    transform: translateY(-50%);
+    font-size: 14px;
+    letter-spacing: -0.84px;
+  }
+
+  .home-mobile .home-body {
+    left: 15px;
+    right: 15px;
+    top: 177px;
+    width: auto;
+    font-size: 14px;
+    letter-spacing: -0.84px;
+  }
+
+  .home-focus {
+    position: absolute;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.84px;
+    white-space: nowrap;
+  }
+
+  .home-mobile .home-msg {
+    left: 15px;
+    top: 502px;
+    transform: none;
+    font-size: 14px;
+    letter-spacing: -0.84px;
+  }
+
+  .home-mobile .home-cta {
+    left: 15px;
+    right: 15px;
+    top: 540px;
+    width: auto;
+    height: 25px;
+    font-size: 14px;
+    letter-spacing: -0.84px;
   }
 }
