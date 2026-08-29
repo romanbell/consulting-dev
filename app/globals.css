@@ -709,3 +709,311 @@ a {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Home (Figma veri-v2-vf: desktop 1098:129, mobile 1098:155)         */
+/* ------------------------------------------------------------------ */
+
+.home {
+  min-height: 100svh;
+  background: #fff;
+  color: #686868;
+}
+
+.home h1,
+.home h2,
+.home p {
+  margin: 0;
+}
+
+/* Content is absolutely positioned, so it cannot grow these containers.
+   The px floor keeps the last section reachable on short viewports. */
+.home-desktop,
+.home-mobile {
+  position: relative;
+  min-height: 100svh;
+  overflow: clip;
+}
+
+.home-desktop {
+  min-height: max(100svh, 782px);
+}
+
+.home-mobile {
+  display: none;
+}
+
+/* Wordmark block: blurred black type under a white 80% backdrop-blur
+   veil, exactly as the Figma background-blur rectangle renders it. */
+.home-mark {
+  position: absolute;
+  left: 24px;
+  top: 32px;
+  width: 820px;
+  height: 279px;
+}
+
+.home-mark__rect {
+  position: absolute;
+  left: 1px;
+  top: 139px;
+  width: 820px;
+  height: 140px;
+  background: #fff;
+}
+
+.home-mark__text {
+  position: absolute;
+  left: 34px;
+  top: 26px;
+  width: 743px;
+  font-weight: 700;
+  font-size: 186.101px;
+  line-height: normal;
+  letter-spacing: -11.1661px;
+  color: #000;
+  filter: blur(1.322px);
+}
+
+.home-mark__veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  /* Figma bg-blur radius 23.688 exports as CSS blur(11.84px). */
+  -webkit-backdrop-filter: blur(11.84px);
+  backdrop-filter: blur(11.84px);
+}
+
+/* Cursor lens: two masked copies of the type above the veil. The gray
+   matches the veiled tone (black at 20% over white), so only sharpness
+   appears to change inside the lens. --lx/--ly/--lens are driven per
+   frame from Home.tsx with easing, which produces the ripple trail. */
+.home-mark__lens {
+  position: absolute;
+  inset: 0;
+  opacity: var(--lens, 0);
+  pointer-events: none;
+}
+
+.home-mark__lens span {
+  position: absolute;
+  left: 34px;
+  top: 26px;
+  width: 743px;
+  font-weight: 700;
+  font-size: 186.101px;
+  line-height: normal;
+  letter-spacing: -11.1661px;
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.home-mark__lens--outer {
+  -webkit-mask-image: radial-gradient(
+    circle 175px at var(--lx, 50%) var(--ly, 50%),
+    rgb(0 0 0) 0%,
+    rgb(0 0 0 / 0.5) 55%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle 175px at var(--lx, 50%) var(--ly, 50%),
+    rgb(0 0 0) 0%,
+    rgb(0 0 0 / 0.5) 55%,
+    transparent 100%
+  );
+}
+
+.home-mark__lens--outer span {
+  filter: blur(5.5px);
+}
+
+.home-mark__lens--inner {
+  -webkit-mask-image: radial-gradient(
+    circle 95px at var(--lx, 50%) var(--ly, 50%),
+    rgb(0 0 0) 0%,
+    rgb(0 0 0 / 0.65) 50%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle 95px at var(--lx, 50%) var(--ly, 50%),
+    rgb(0 0 0) 0%,
+    rgb(0 0 0 / 0.65) 50%,
+    transparent 100%
+  );
+}
+
+.home-mark__lens--inner span {
+  filter: blur(2.4px);
+}
+
+/* Desktop body sections: one size down from the file's 20px, tracking
+   kept at the design's -6% ratio. Content width matches the wordmark
+   text block (743px from x=58, right edge 801 = pill right edge). */
+.home-heading {
+  position: absolute;
+  left: 58px;
+  width: 743px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+}
+
+.home-body {
+  position: absolute;
+  left: 58px;
+  top: 372px;
+  width: 743px;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+}
+
+.home-focus-row {
+  position: absolute;
+  left: 58px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+  white-space: nowrap;
+}
+
+.home-star {
+  display: block;
+  flex: none;
+}
+
+.home-msg {
+  position: absolute;
+  left: 63px;
+  top: 730px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+  white-space: nowrap;
+}
+
+.home-cta {
+  position: absolute;
+  left: 575px;
+  top: 714px;
+  width: 226px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #d6eaaa;
+  border-radius: 39px;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: -1.08px;
+  color: #686868;
+  text-decoration: none;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.home-cta:hover {
+  background: #c9e194;
+  color: #5a5a5a;
+}
+
+@media (max-width: 767.98px) {
+  .home-desktop {
+    display: none;
+  }
+
+  .home-mobile {
+    display: block;
+    /* Content ends at 565px plus the wordmark growth offset. */
+    min-height: max(100svh, calc(451.447px + 33.982vw + 20px));
+  }
+
+  /* Mobile wordmark scales with the viewport so it always spans the
+     full width. Values are the 393px-frame measurements as vw. */
+  .home-mobile .home-mark {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 33.982vw; /* 133.553 / 393 */
+  }
+
+  .home-mobile .home-mark__rect {
+    left: 0;
+    top: 16.93vw; /* 66.536 / 393 */
+    width: 100%;
+    height: 17.052vw; /* 67.016 / 393 */
+  }
+
+  .home-mobile .home-mark__text {
+    left: 4.141vw; /* 16.275 / 393 */
+    top: 3.167vw; /* 12.446 / 393 */
+    width: auto;
+    font-size: 22.668vw; /* 89.084 / 393 */
+    letter-spacing: -1.36vw; /* -5.345 / 393 */
+    filter: blur(0.161vw); /* 0.633 / 393 */
+  }
+
+  .home-mobile .home-mark__veil {
+    -webkit-backdrop-filter: blur(1.443vw); /* 5.67 / 393 */
+    backdrop-filter: blur(1.443vw);
+  }
+
+  /* Content shifts down by the wordmark's growth past its 393px-frame
+     height, so wider phones never overlap. Zero at 393px wide. */
+  .home-mobile-flow {
+    position: absolute;
+    inset: 0;
+    top: calc(33.982vw - 133.553px);
+  }
+
+  .home-mobile .home-heading {
+    left: 15px;
+    right: 15px;
+    width: auto;
+    transform: translateY(-50%);
+    font-size: 14px;
+    letter-spacing: -0.84px;
+  }
+
+  .home-mobile .home-body {
+    left: 15px;
+    right: 15px;
+    top: 177px;
+    width: auto;
+    font-size: 14px;
+    letter-spacing: -0.84px;
+  }
+
+  .home-focus {
+    position: absolute;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.84px;
+    white-space: nowrap;
+  }
+
+  .home-mobile .home-msg {
+    left: 15px;
+    top: 502px;
+    transform: none;
+    font-size: 14px;
+    letter-spacing: -0.84px;
+  }
+
+  .home-mobile .home-cta {
+    left: 15px;
+    right: 15px;
+    top: 540px;
+    width: auto;
+    height: 25px;
+    font-size: 14px;
+    letter-spacing: -0.84px;
+  }
+}

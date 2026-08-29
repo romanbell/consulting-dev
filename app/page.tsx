@@ -1,5 +1,5 @@
-import Grid from "@/components/Grid";
+import Home from "@/components/Home";
 
 export default function Page() {
-  return <Grid />;
+  return <Home />;
 }
