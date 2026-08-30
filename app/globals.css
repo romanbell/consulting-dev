@@ -726,6 +726,10 @@ a {
   margin: 0;
 }
 
+.home ::selection {
+  background: #d6eaaa;
+}
+
 /* Content is absolutely positioned, so it cannot grow these containers.
    The px floor keeps the last section reachable on short viewports. */
 .home-desktop,

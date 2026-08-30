@@ -6,6 +6,8 @@
 
 import { Fragment, useEffect, useRef } from "react";
 
+const CONTACT_MAILTO = "mailto:hello@veridium.studio";
+
 const INFO_COPY =
   "Veridium is a small digital studio practice. We work across design and engineering, usually with teams that need a rough idea carried all the way to something running in production. Projects stay small on purpose, which keeps decisions fast and the communication short. We are based in New York, NY and Cambridge, MA, and work with teams anywhere.";
 
@@ -256,7 +258,7 @@ export default function Home() {
           Our Work
         </h2>
         <span className="home-msg">Shoot us a msg to learn more about our work</span>
-        <a className="home-cta" href="mailto:hello@veridium.studio">
+        <a className="home-cta" href={CONTACT_MAILTO}>
           get in touch
         </a>
       </section>
@@ -286,7 +288,7 @@ export default function Home() {
             Our Work
           </h2>
           <span className="home-msg">Shoot us a msg to learn more about our work</span>
-          <a className="home-cta" href="mailto:hello@veridium.studio">
+          <a className="home-cta" href={CONTACT_MAILTO}>
             get in touch
           </a>
         </div>
