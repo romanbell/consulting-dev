@@ -41,7 +41,22 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body>{children}</body>
+      <body>
+        {/* Google tag (gtag.js) — React hoists the async loader into <head>. */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-3FJXBRFZ4N"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-3FJXBRFZ4N');`,
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
