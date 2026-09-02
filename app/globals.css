@@ -740,7 +740,7 @@ a {
 }
 
 .home-desktop {
-  min-height: max(100svh, 782px);
+  min-height: max(100svh, 775px);
 }
 
 .home-mobile {
@@ -893,7 +893,7 @@ a {
 .home-msg {
   position: absolute;
   left: 63px;
-  top: 730px;
+  top: 723px;
   transform: translateY(-50%);
   font-size: 18px;
   line-height: normal;
@@ -904,7 +904,7 @@ a {
 .home-cta {
   position: absolute;
   left: 575px;
-  top: 714px;
+  top: 707px;
   width: 226px;
   height: 36px;
   display: flex;
@@ -935,8 +935,8 @@ a {
 
   .home-mobile {
     display: block;
-    /* Content ends at 565px plus the wordmark growth offset. */
-    min-height: max(100svh, calc(451.447px + 33.982vw + 20px));
+    /* Content ends at 562px plus the wordmark growth offset. */
+    min-height: max(100svh, calc(448.447px + 33.982vw + 20px));
   }
 
   /* Mobile wordmark scales with the viewport so it always spans the
@@ -1005,7 +1005,7 @@ a {
 
   .home-mobile .home-msg {
     left: 15px;
-    top: 502px;
+    top: 499px;
     transform: none;
     font-size: 14px;
     letter-spacing: -0.84px;
@@ -1014,7 +1014,7 @@ a {
   .home-mobile .home-cta {
     left: 15px;
     right: 15px;
-    top: 540px;
+    top: 537px;
     width: auto;
     height: 25px;
     font-size: 14px;
