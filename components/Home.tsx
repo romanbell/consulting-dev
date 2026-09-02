@@ -9,7 +9,7 @@ import { Fragment, useEffect, useRef } from "react";
 const CONTACT_MAILTO = "mailto:hello@veridium.studio";
 
 const INFO_COPY =
-  "Veridium is a small digital studio practice. We work across design and engineering, usually with teams that need a rough idea carried all the way to something running in production. Projects stay small on purpose, which keeps decisions fast and the communication short. We are based in New York, NY and Cambridge, MA, and work with teams anywhere.";
+  "Veridium is a small digital studio practice. We work across design and engineering, usually with teams that need a rough idea carried all the way to something running in production. Projects stay small on purpose, generally ranging between 3 and 9 months. We are based in New York, NY and Cambridge, MA, and have worked with teams all over the world.";
 
 const DESKTOP_FOCUS_ROWS: string[][] = [
   [
@@ -22,11 +22,11 @@ const DESKTOP_FOCUS_ROWS: string[][] = [
 ];
 
 const MOBILE_FOCUS = [
-  { label: "AI Systems", left: 15, top: 378 },
-  { label: "Technical Strategy", left: 91, top: 378 },
-  { label: "Software Engineering", left: 15, top: 403 },
-  { label: "Digital Prototyping", left: 149, top: 403 },
-  { label: "Data Infrastructure", left: 269, top: 403 },
+  { label: "AI Systems", left: 15, top: 375 },
+  { label: "Technical Strategy", left: 91, top: 375 },
+  { label: "Software Engineering", left: 15, top: 400 },
+  { label: "Digital Prototyping", left: 149, top: 400 },
+  { label: "Data Infrastructure", left: 269, top: 400 },
 ];
 
 function Star() {
@@ -244,7 +244,7 @@ export default function Home() {
           Our Focus
         </h2>
         {DESKTOP_FOCUS_ROWS.map((row, r) => (
-          <div key={r} className="home-focus-row" style={{ top: r === 0 ? 576 : 618 }}>
+          <div key={r} className="home-focus-row" style={{ top: r === 0 ? 569 : 611 }}>
             {row.map((label, i) => (
               <Fragment key={label}>
                 {i > 0 && <Star />}
