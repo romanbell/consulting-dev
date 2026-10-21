@@ -755,6 +755,8 @@ a {
   top: 32px;
   width: 820px;
   height: 279px;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .home-mark__rect {
@@ -855,7 +857,8 @@ a {
 .home-heading {
   position: absolute;
   left: 58px;
-  width: 743px;
+  width: fit-content;
+  white-space: nowrap;
   font-weight: 700;
   font-size: 18px;
   line-height: normal;
@@ -979,8 +982,6 @@ a {
 
   .home-mobile .home-heading {
     left: 15px;
-    right: 15px;
-    width: auto;
     transform: translateY(-50%);
     font-size: 14px;
     letter-spacing: -0.84px;
@@ -995,12 +996,19 @@ a {
     letter-spacing: -0.84px;
   }
 
-  .home-focus {
-    position: absolute;
+  .home-mobile .home-focus-row {
+    left: 15px;
+    right: 15px;
+    transform: none;
+    flex-wrap: wrap;
+    gap: 8px;
     font-size: 14px;
-    line-height: normal;
     letter-spacing: -0.84px;
-    white-space: nowrap;
+  }
+
+  .home-mobile .home-star {
+    width: 15px;
+    height: 15px;
   }
 
   .home-mobile .home-msg {

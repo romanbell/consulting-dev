@@ -9,7 +9,7 @@ import { Fragment, useEffect, useRef } from "react";
 const CONTACT_MAILTO = "mailto:hello@veridium.studio";
 
 const INFO_COPY =
-  "Veridium is a small digital studio practice. We work across design and engineering, usually with teams that need a rough idea carried all the way to something running in production. Projects stay small on purpose, generally ranging between 3 and 9 months. We are based in New York, NY and Cambridge, MA, and have worked with teams all over the world.";
+  "Veridium is a small digital studio practice. We work across design and engineering, usually with teams that need a rough idea carried all the way to something running in production. Projects often stay small on purpose, generally ranging between 3 and 9 months. We are based in New York, NY and Cambridge, MA, and have worked with teams all over the world.";
 
 const DESKTOP_FOCUS_ROWS: string[][] = [
   [
@@ -21,12 +21,9 @@ const DESKTOP_FOCUS_ROWS: string[][] = [
   ["Digital Prototyping", "Machine Learning Systems", "Technical Strategy"],
 ];
 
-const MOBILE_FOCUS = [
-  { label: "AI Systems", left: 15, top: 375 },
-  { label: "Technical Strategy", left: 91, top: 375 },
-  { label: "Software Engineering", left: 15, top: 400 },
-  { label: "Digital Prototyping", left: 149, top: 400 },
-  { label: "Data Infrastructure", left: 269, top: 400 },
+const MOBILE_FOCUS_ROWS: string[][] = [
+  ["AI Systems", "Technical Strategy"],
+  ["Software Engineering", "Digital Prototyping", "Data Infrastructure"],
 ];
 
 function Star() {
@@ -278,10 +275,15 @@ export default function Home() {
           <h2 className="home-heading" style={{ top: 362 }}>
             Our Focus
           </h2>
-          {MOBILE_FOCUS.map((f) => (
-            <span key={f.label} className="home-focus" style={{ left: f.left, top: f.top }}>
-              {f.label}
-            </span>
+          {MOBILE_FOCUS_ROWS.map((row, r) => (
+            <div key={r} className="home-focus-row" style={{ top: r === 0 ? 375 : 400 }}>
+              {row.map((label, i) => (
+                <Fragment key={label}>
+                  {i > 0 && <Star />}
+                  <span>{label}</span>
+                </Fragment>
+              ))}
+            </div>
           ))}
 
           <h2 className="home-heading" style={{ top: 486 }}>
